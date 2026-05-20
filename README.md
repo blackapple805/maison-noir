@@ -25,8 +25,27 @@ This is a frontend-only project. All products, transactions, and orders are mock
 ---
 
 ## Screenshots
+## Screenshots
 
-> Add your own screenshots to a `/screenshots` folder in the repo and reference them here.
+### Home
+![Hero — Dark](./screenshots/hero-dark.png)
+![Hero — Light](./screenshots/hero-light.png)
+
+### Collection
+![Collection Grid — Dark](./screenshots/collection-dark.png)
+![Collection Grid — Light](./screenshots/collection-light.png)
+
+### Product
+![Product Detail](./screenshots/product.png)
+
+### Checkout & Confirmation
+![Confirmation — Light](./screenshots/confirmation-light.png)
+![Confirmation — Dark](./screenshots/confirmation-dark.png)
+![PDF Invoice](./screenshots/invoice.png)
+
+### Brand Details
+![Loading Screen](./screenshots/loading-screen.png)
+![Marquee](./screenshots/marquee.png)
 
 ```
 /screenshots
