@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M20 1 L39 20 L20 39 L1 20 Z' stroke='%23E8E2D5' stroke-opacity='0.35' stroke-width='0.75' fill='%230A0A0A'/%3E%3Cpath d='M20 4 L36 20 L20 20 L4 20 Z' fill='%23E8E2D5' fill-opacity='0.95'/%3E%3Cpath d='M20 20 L28 36 L20 28 L12 36 Z' fill='%23E8E2D5'/%3E%3Ccircle cx='20' cy='20' r='1.6' fill='%239C1B2A'/%3E%3C/svg%3E" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F2EDE2" media="(prefers-color-scheme: light)" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+    <title>MAISON NOIR — Editorial Atelier</title>
+    <meta name="description" content="Editorial atelier. Sculpted silhouettes, ritual craftsmanship." />
+    <script>
+      // Apply theme before paint to prevent flash
+      (function() {
+        try {
+          var stored = localStorage.getItem('mn-theme');
+          var t = stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+          document.documentElement.setAttribute('data-theme', t);
+        } catch(e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

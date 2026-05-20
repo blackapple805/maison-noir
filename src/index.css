@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   THEME TOKENS — driven by data-theme attribute on <html>
+   ============================================================ */
+
+:root,
+[data-theme='dark'] {
+  --bg: #0A0A0A;
+  --bg-elev: #141414;
+  --bg-elev-2: #1C1C1C;
+  --bg-elev-3: #2A2A2A;
+  --fg: #E8E2D5;
+  --fg-muted: rgba(232, 226, 213, 0.70);
+  --fg-dim: rgba(232, 226, 213, 0.45);
+  --fg-faint: rgba(232, 226, 213, 0.25);
+  --hairline: rgba(232, 226, 213, 0.15);
+  --accent: #9C1B2A;
+  --accent-deep: #6B0F1A;
+  --accent-soft: rgba(156, 27, 42, 0.15);
+  --grain-opacity: 0.06;
+  --grain-blend: overlay;
+  --hero-veil-top: rgba(10, 10, 10, 0.60);
+  --hero-veil-bottom: rgba(10, 10, 10, 1);
+  --hero-veil-side: rgba(10, 10, 10, 0.60);
+  --bg-radial-1: rgba(107, 15, 26, 0.15);
+  --bg-radial-2: rgba(60, 26, 31, 0.20);
+  --image-grayscale: 20%;
+  --img-mix-mode: normal;
+}
+
+[data-theme='light'] {
+  --bg: #F2EDE2;          /* warm bone */
+  --bg-elev: #EBE5D7;     /* paper */
+  --bg-elev-2: #E2DBCB;
+  --bg-elev-3: #D6CDB8;
+  --fg: #161210;          /* deep ink, not pure black — warmer */
+  --fg-muted: rgba(22, 18, 16, 0.72);
+  --fg-dim: rgba(22, 18, 16, 0.50);
+  --fg-faint: rgba(22, 18, 16, 0.28);
+  --hairline: rgba(22, 18, 16, 0.18);
+  --accent: #7A1220;      /* deeper oxblood reads on cream */
+  --accent-deep: #5A0D17;
+  --accent-soft: rgba(122, 18, 32, 0.10);
+  --grain-opacity: 0.08;
+  --grain-blend: multiply;
+  --hero-veil-top: rgba(242, 237, 226, 0.40);
+  --hero-veil-bottom: rgba(242, 237, 226, 0.95);
+  --hero-veil-side: rgba(242, 237, 226, 0.35);
+  --bg-radial-1: rgba(122, 18, 32, 0.08);
+  --bg-radial-2: rgba(60, 26, 31, 0.06);
+  --image-grayscale: 10%;
+  --img-mix-mode: normal;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    @apply font-body antialiased overflow-x-hidden;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, var(--bg-radial-1), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, var(--bg-radial-2), transparent 70%);
+    transition: background-color 0.6s ease, color 0.6s ease;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--bg);
+  }
+}
+
+@layer components {
+  .grain {
+    position: relative;
+  }
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    mix-blend-mode: var(--grain-blend);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .hairline {
+    border-color: var(--hairline);
+  }
+  .editorial-label {
+    @apply font-mono text-[10px] uppercase;
+    letter-spacing: 0.32em;
+    color: var(--fg-dim);
+  }
+  .link-line {
+    @apply relative inline-block;
+  }
+  .link-line::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform-origin: right;
+    transform: scaleX(0);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .link-line:hover::after {
+    transform-origin: left;
+    transform: scaleX(1);
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg-elev-3); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
