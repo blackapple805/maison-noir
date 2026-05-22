@@ -4,6 +4,7 @@ import Nav from './components/Nav'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
 import LoadingScreen from './components/LoadingScreen'
+import AmbientField from './components/AmbientField'
 import { QuickViewProvider } from './components/QuickView'
 import { SearchProvider } from './components/SearchOverlay'
 import Home from './pages/Home'
@@ -26,6 +27,7 @@ export default function App() {
   return (
     <SearchProvider>
       <QuickViewProvider>
+        <AmbientField />
         <LoadingScreen />
         <ScrollToTop />
         <Nav />

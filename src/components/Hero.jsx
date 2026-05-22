@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import AmorphousBlob from './AmorphousBlob'
 
 export default function Hero() {
   return (
@@ -19,6 +20,16 @@ export default function Hero() {
             background:
               'linear-gradient(to top, var(--hero-veil-bottom), transparent 50%, var(--hero-veil-top))',
           }}
+        />
+        {/* Amorphous accent — drifts behind the headline */}
+        <AmorphousBlob
+          variant="draped"
+          color="var(--accent)"
+          size="55vw"
+          opacity={0.22}
+          blur={90}
+          duration={26}
+          style={{ bottom: '-10vw', left: '-8vw' }}
         />
         <div
           className="absolute inset-0"

@@ -17,10 +17,25 @@ export default function ProductCard({ product, index = 0 }) {
       className="group"
     >
       <div className="relative overflow-hidden bg-bg-elev aspect-[3/4] mb-5">
+        {/* Amorphous hover accent — morphs in behind image edge */}
+        <div
+          aria-hidden="true"
+          className="absolute -bottom-1/3 -right-1/3 w-2/3 h-2/3 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-[1200ms]"
+          style={{ filter: 'blur(40px)' }}
+        >
+          <svg viewBox="0 0 200 200" width="100%" height="100%">
+            <path
+              d="M100,25 Q140,45 150,90 Q160,140 120,170 Q85,185 60,160 Q35,130 50,95 Q70,55 100,25 Z"
+              fill="var(--accent)"
+              opacity="0.45"
+            />
+          </svg>
+        </div>
+
         {/* Editorial caption */}
-        <div className="absolute top-4 left-4 right-4 flex justify-between editorial-label z-10 text-fg-muted pointer-events-none">
-          <span>{product.season}</span>
-          <span>{product.colorway}</span>
+        <div className="absolute top-4 left-4 right-16 flex justify-between gap-3 editorial-label z-10 text-fg-muted pointer-events-none">
+          <span className="truncate">{product.season}</span>
+          <span className="truncate text-right">{product.colorway}</span>
         </div>
 
         <Link to={`/product/${product.id}`} className="block w-full h-full" aria-label={`View ${product.name}`}>
