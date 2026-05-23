@@ -29,6 +29,11 @@
   --bg-radial-2: rgba(60, 26, 31, 0.20);
   --image-grayscale: 20%;
   --img-mix-mode: normal;
+
+  /* Lookbook veil — dark mode darkens with deep ink */
+  --lookbook-veil-color: 10, 10, 10;          /* near-black, RGB */
+  --lookbook-veil-side-from: 0, 0, 0;         /* anchor */
+  --lookbook-image-grayscale: 15%;
 }
 
 [data-theme='light'] {
@@ -53,6 +58,11 @@
   --bg-radial-2: rgba(60, 26, 31, 0.06);
   --image-grayscale: 10%;
   --img-mix-mode: normal;
+
+  /* Lookbook veil — light mode washes warm bone over the image */
+  --lookbook-veil-color: 242, 237, 226;       /* bone, RGB */
+  --lookbook-veil-side-from: 220, 213, 198;   /* slightly cooler paper */
+  --lookbook-image-grayscale: 25%;
 }
 
 @layer base {
@@ -167,6 +177,45 @@
       135deg,
       color-mix(in srgb, var(--bg) 55%, transparent),
       color-mix(in srgb, var(--bg) 30%, transparent)
+    );
+  }
+
+  /* ------------------------------------------------------------
+     LOOKBOOK — theme-aware spread overlays
+     ------------------------------------------------------------
+     Each spread sets two CSS custom properties inline:
+       --spread-overlay       : strength of the base veil (0–1)
+       --spread-overlay-side  : strength of the directional anchor
+
+     The veil colors flip between themes:
+       dark   → near-black wash (darkens image)
+       light  → bone wash (gently brightens image so type reads)
+     ------------------------------------------------------------ */
+  .lookbook-spread {
+    background-color: var(--bg);
+  }
+  .lookbook-spread img {
+    filter: grayscale(var(--lookbook-image-grayscale));
+  }
+  .lookbook-veil-base {
+    background: rgba(var(--lookbook-veil-color), var(--spread-overlay, 0.5));
+    transition: background 0.6s ease;
+  }
+  .lookbook-veil-side {
+    transition: background 0.6s ease;
+  }
+  .lookbook-veil-side--left {
+    background: linear-gradient(
+      90deg,
+      rgba(var(--lookbook-veil-side-from), var(--spread-overlay-side, 0.4)) 0%,
+      transparent 55%
+    );
+  }
+  .lookbook-veil-side--right {
+    background: linear-gradient(
+      270deg,
+      rgba(var(--lookbook-veil-side-from), var(--spread-overlay-side, 0.4)) 0%,
+      transparent 55%
     );
   }
 }

@@ -6,20 +6,23 @@ import { CartProvider } from './context/CartContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { WishlistProvider } from './context/WishlistContext'
 import { OrderProvider } from './context/OrderContext'
+import ErrorBoundary from './components/ErrorBoundary'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <BrowserRouter>
-        <OrderProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <App />
-            </WishlistProvider>
-          </CartProvider>
-        </OrderProvider>
-      </BrowserRouter>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <BrowserRouter>
+          <OrderProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <App />
+              </WishlistProvider>
+            </CartProvider>
+          </OrderProvider>
+        </BrowserRouter>
+      </ThemeProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 )

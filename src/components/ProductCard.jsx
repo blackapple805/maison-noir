@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useQuickView, Heart } from './QuickView'
@@ -7,6 +8,8 @@ export default function ProductCard({ product, index = 0 }) {
   const { open } = useQuickView()
   const { has, toggle } = useWishlist()
   const saved = has(product.id)
+  // Track image load failure so we can render a graceful placeholder.
+  const [imgFailed, setImgFailed] = useState(false)
 
   return (
     <motion.article
@@ -39,13 +42,32 @@ export default function ProductCard({ product, index = 0 }) {
         </div>
 
         <Link to={`/product/${product.id}`} className="block w-full h-full" aria-label={`View ${product.name}`}>
-          <img
-            src={product.image}
-            alt={product.name}
-            loading="lazy"
-            style={{ filter: `grayscale(var(--image-grayscale))` }}
-            className="w-full h-full object-cover group-hover:scale-105 transition-all duration-[1500ms] ease-out"
-          />
+          {imgFailed ? (
+            // Graceful fallback — keep the card composed even if the image 404s.
+            // Shows the product name in display type, faintly, so the layout
+            // never collapses into an empty rectangle with raw alt text.
+            <div
+              className="w-full h-full flex items-center justify-center px-6 text-center"
+              style={{ backgroundColor: 'var(--bg-elev-2)' }}
+              aria-hidden="true"
+            >
+              <span
+                className="font-display italic text-2xl leading-tight"
+                style={{ color: 'var(--fg-faint)' }}
+              >
+                {product.name}
+              </span>
+            </div>
+          ) : (
+            <img
+              src={product.image}
+              alt={product.name}
+              loading="lazy"
+              style={{ filter: `grayscale(var(--image-grayscale))` }}
+              className="w-full h-full object-cover group-hover:scale-105 transition-all duration-[1500ms] ease-out"
+              onError={() => setImgFailed(true)}
+            />
+          )}
         </Link>
 
         {/* Wishlist heart — always visible */}

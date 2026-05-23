@@ -2,10 +2,20 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 
-// Each spread carries its own overlay strength.
-// Brighter photos need higher overlay (0.65-0.80) to keep text legible.
-// Darker / moodier photos need lower overlay (0.35-0.50) so the image stays visible.
-// 'side' controls which side the secondary directional gradient anchors text against.
+/**
+ * Lookbook
+ * --------
+ * Editorial scroll-through of the season's chapters.
+ *
+ * Each spread defines its own:
+ *   - overlay  : strength of the theme-aware veil (0 light → 1 heavy).
+ *                Bright photos need higher overlay; moody ones can breathe.
+ *   - side     : which side the directional gradient anchors text against.
+ *                Always lay type over the darkened side.
+ *
+ * The overlay system is fully theme-driven. In dark mode it darkens; in
+ * light mode it lightens with a warm bone wash. No hardcoded blacks.
+ */
 const spreads = [
   {
     n: 'I',
@@ -13,7 +23,7 @@ const spreads = [
     line: 'The flower is picked before sunrise. The cold preserves the oil.',
     image: 'https://images.unsplash.com/photo-1490312278390-ab64016e0aa9?w=2000&q=85',
     productId: 'fleur-cleansing-oil',
-    overlay: 0.72, // bright cherry blossom — needs heavier darkening
+    overlay: 0.62,
     side: 'left',
   },
   {
@@ -22,7 +32,7 @@ const spreads = [
     line: 'Steam carries the essence. We capture what would otherwise be lost.',
     image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=2000&q=85',
     productId: 'sérum-lumière',
-    overlay: 0.60,
+    overlay: 0.55,
     side: 'right',
   },
   {
@@ -31,7 +41,7 @@ const spreads = [
     line: 'A formula matures in glass for forty days before it leaves us.',
     image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=2000&q=85',
     productId: 'huile-précieuse',
-    overlay: 0.45, // amber bottle, already dim — let it breathe
+    overlay: 0.42,
     side: 'left',
   },
   {
@@ -40,7 +50,7 @@ const spreads = [
     line: 'Apply with intention. The hands do half the work.',
     image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=2000&q=85',
     productId: 'crème-velours',
-    overlay: 0.50,
+    overlay: 0.48,
     side: 'right',
   },
 ]
@@ -49,7 +59,7 @@ export default function Lookbook() {
   return (
     <div className="pt-24">
       {/* Cover */}
-      <section className="px-6 md:px-10 py-24 md:py-32 border-b hairline grain">
+      <section className="relative px-6 md:px-10 py-24 md:py-32 border-b hairline grain overflow-hidden">
         <p className="editorial-label text-accent mb-6">— Batch 26 · The Lookbook</p>
         <h1 className="font-display text-6xl md:text-8xl lg:text-[11rem] tracking-tighter2 leading-[0.86]">
           A study <br />
@@ -60,15 +70,23 @@ export default function Lookbook() {
           Grasse and the orchards of Provence, by morning light over three days
           in February.
         </p>
+
+        {/* Cover meta line */}
+        <div className="mt-16 pt-6 border-t hairline flex flex-wrap items-end justify-between gap-4 editorial-label text-fg-dim">
+          <span>Folio · 005</span>
+          <span>Plates I — IV</span>
+          <span>MMXXVI</span>
+        </div>
       </section>
 
       {spreads.map((s, i) => (
-        <Spread key={s.n} spread={s} index={i} />
+        <Spread key={s.n} spread={s} index={i} total={spreads.length} />
       ))}
 
-      <section className="px-6 md:px-10 py-32 text-center grain">
+      {/* Coda */}
+      <section className="px-6 md:px-10 py-32 text-center grain border-t hairline">
         <p className="editorial-label text-accent mb-6">— Coda</p>
-        <p className="font-display italic text-3xl md:text-5xl max-w-3xl mx-auto leading-tight text-fg-muted mb-10 text-adaptive">
+        <p className="font-display italic text-3xl md:text-5xl max-w-3xl mx-auto leading-tight text-fg-muted mb-10">
           "Skin is memory. Care is repetition."
         </p>
         <Link to="/collection" className="editorial-label link-line hover:text-accent">
@@ -79,7 +97,7 @@ export default function Lookbook() {
   )
 }
 
-function Spread({ spread, index }) {
+function Spread({ spread, index, total }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -89,40 +107,57 @@ function Spread({ spread, index }) {
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.05, 1, 1.05])
   const flip = index % 2 === 1
 
-  // Anchor the directional gradient on the SAME side as the text content,
-  // so type sits over the darker region of the image.
-  const sideGradient =
-    spread.side === 'right'
-      ? 'linear-gradient(270deg, rgba(0,0,0,0.55) 0%, transparent 55%)'
-      : 'linear-gradient(90deg, rgba(0,0,0,0.55) 0%, transparent 55%)'
-
+  /*
+   * Theme-aware overlay system.
+   *
+   * `--lookbook-veil`     : base wash color, set per-theme below.
+   * `--lookbook-side`     : directional anchor wash, weaker than base.
+   *
+   * In dark mode → black-leaning, darkens the image.
+   * In light mode → warm bone-leaning, gently desaturates and brightens
+   *                  the image so the type sits cleanly.
+   */
   return (
-    <section ref={ref} className="relative min-h-[110vh] flex items-center overflow-hidden border-b hairline bg-bg">
+    <section
+      ref={ref}
+      className="lookbook-spread relative min-h-[110vh] flex items-center overflow-hidden border-b hairline"
+      style={{
+        '--spread-overlay': spread.overlay,
+        '--spread-overlay-side': Math.max(0, spread.overlay - 0.15),
+      }}
+    >
+      {/* Image layer */}
       <motion.div style={{ y, scale }} className="absolute inset-0">
         <img
           src={spread.image}
           alt=""
           className="w-full h-full object-cover"
           loading="lazy"
+          style={{ filter: 'grayscale(var(--image-grayscale))' }}
           onError={(e) => {
-            // Graceful fallback: hide broken image so the section never
-            // collapses into a pure-black void with no visual.
+            // Graceful fallback: hide broken images so the section never
+            // collapses into a flat color void with no visual content.
             e.currentTarget.style.display = 'none'
           }}
         />
-        {/* Per-spread base darkening — tuned to the photo's luminosity */}
+
+        {/* Base theme-aware veil */}
+        <div className="absolute inset-0 lookbook-veil-base" />
+
+        {/* Directional anchor — anchor text against a slightly stronger wash */}
         <div
-          className="absolute inset-0"
-          style={{ background: `rgba(10, 10, 10, ${spread.overlay})` }}
-        />
-        {/* Directional anchor — gives text a darker zone to sit against */}
-        <div
-          className="absolute inset-0"
-          style={{ background: sideGradient }}
+          className={`absolute inset-0 lookbook-veil-side ${
+            spread.side === 'right' ? 'lookbook-veil-side--right' : 'lookbook-veil-side--left'
+          }`}
         />
       </motion.div>
 
-      <div className={`relative z-10 px-6 md:px-16 w-full max-w-7xl mx-auto grid md:grid-cols-12 gap-8 items-center ${flip ? 'md:[direction:rtl]' : ''}`}>
+      {/* Content */}
+      <div
+        className={`relative z-10 px-6 md:px-16 w-full max-w-7xl mx-auto grid md:grid-cols-12 gap-8 items-center ${
+          flip ? 'md:[direction:rtl]' : ''
+        }`}
+      >
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -130,7 +165,9 @@ function Spread({ spread, index }) {
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className="md:col-span-7 md:[direction:ltr]"
         >
-          <div className="editorial-label text-accent mb-4 text-adaptive">— Chapter {spread.n}</div>
+          <div className="editorial-label text-accent mb-4 text-adaptive">
+            — Chapter {spread.n}
+          </div>
           <h2 className="font-display text-6xl md:text-8xl lg:text-[10rem] tracking-tighter2 leading-[0.88] text-fg text-adaptive">
             {spread.title}
           </h2>
@@ -146,8 +183,9 @@ function Spread({ spread, index }) {
         </motion.div>
       </div>
 
-      <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between editorial-label text-adaptive">
-        <span>Plate · {String(index + 1).padStart(2, '0')} / {String(spreads.length).padStart(2, '0')}</span>
+      {/* Plate footer */}
+      <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between editorial-label text-fg-dim text-adaptive">
+        <span>Plate · {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}</span>
         <span>Grasse · MMXXVI</span>
       </div>
     </section>

@@ -37,7 +37,7 @@ export const products = [
     materials: 'L-Ascorbic Acid 15% · Ferulic Acid · Vitamin E',
     origin: 'Formulated in Lyon',
     description: 'A high-stability vitamin C serum, suspended in a low-pH base for maximum bioavailability. Brightens, evens tone, defends against environmental pigmentation. Worn beneath SPF.',
-    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=1200&q=85',
+    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1200&q=85',
     sizes: ['30ml', '50ml'],
   },
   {
@@ -89,7 +89,7 @@ export const products = [
     materials: 'Beeswax · Calendula · Sweet Almond',
     origin: 'Apothecary, Aix-en-Provence',
     description: 'A multi-purpose repair balm in the French pharmacy tradition. For dry patches, chapped lips, cuticles, and post-procedure skin. Heirloom formula, unscented, ninety-six hours to set.',
-    image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=1200&q=85',
+    image: 'https://images.unsplash.com/photo-1612817288484-6f916006741a?w=1200&q=85',
     sizes: ['30ml', '75ml'],
   },
   {

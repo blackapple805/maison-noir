@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "framer-motion": "^11.3.19",
-    "jspdf": "^2.5.1",
+    "jspdf": "^4.0.0",
     "lucide-react": "^0.424.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

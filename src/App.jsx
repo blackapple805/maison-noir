@@ -17,6 +17,16 @@ import Checkout from './pages/Checkout'
 import Confirmation from './pages/Confirmation'
 import NotFound from './pages/NotFound'
 
+// Footer pages — House
+import Heritage from './pages/Heritage'
+import Boutiques from './pages/Boutiques'
+
+// Footer pages — Services
+import MadeToMeasure from './pages/MadeToMeasure'
+import ApothecaryConsultation from './pages/ApothecaryConsultation'
+import RefillRecycling from './pages/RefillRecycling'
+import Concierge from './pages/Concierge'
+
 function ScrollToTop() {
   const { pathname } = useLocation()
   useEffect(() => window.scrollTo(0, 0), [pathname])
@@ -42,6 +52,17 @@ export default function App() {
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/confirmation/:number" element={<Confirmation />} />
             <Route path="/journal" element={<Lookbook />} />
+
+            {/* House */}
+            <Route path="/heritage" element={<Heritage />} />
+            <Route path="/boutiques" element={<Boutiques />} />
+
+            {/* Services */}
+            <Route path="/made-to-measure" element={<MadeToMeasure />} />
+            <Route path="/consultation" element={<ApothecaryConsultation />} />
+            <Route path="/refill" element={<RefillRecycling />} />
+            <Route path="/concierge" element={<Concierge />} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
