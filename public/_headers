@@ -1,6 +1,10 @@
 # Production security headers
 # Used automatically by Netlify, Cloudflare Pages, and similar static hosts.
 # Place this file at the deploy root (Vite copies the contents of /public there).
+#
+# Note: media-src 'self' is sufficient when videos live in public/videos/
+# and get deployed alongside the bundle. If you ever serve video from an
+# external CDN, add the host to media-src AND connect-src.
 
 /*
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
@@ -8,6 +12,6 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
-  Content-Security-Policy: default-src 'self'; img-src 'self' data: blob: https://images.unsplash.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; img-src 'self' data: blob: https://images.unsplash.com; media-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin

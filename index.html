@@ -5,10 +5,12 @@
     <!-- Security: Content Security Policy
          Allows: self-hosted assets, Google Fonts (used), Unsplash images (hero),
          inline styles (Tailwind + framer-motion), inline scripts (theme bootstrap).
-         Adjust 'connect-src' if you later add an API. -->
+         Adjust 'connect-src' / 'media-src' if you later swap CDN providers.
+         Self-hosted videos (in public/videos/) work under media-src 'self'. -->
     <meta http-equiv="Content-Security-Policy" content="
       default-src 'self';
       img-src 'self' data: blob: https://images.unsplash.com;
+      media-src 'self';
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com;
       script-src 'self' 'unsafe-inline';

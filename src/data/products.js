@@ -1,5 +1,17 @@
 // Mock products. Images sourced from Unsplash (free editorial photography).
 // Swap these URLs anytime — keep the aspect/mood consistent for cohesion.
+//
+// OPTIONAL: each product may include a `video` field — a short, muted,
+// looping clip (mp4) that replaces the still on hover. Currently only
+// Sérum Lumière has one (using a free Coverr clip as a placeholder).
+// Add or remove `video` fields per product as you produce real footage.
+//
+// Filming notes if you produce your own:
+//   - 3–5 seconds, no audio, loops cleanly start-to-end.
+//   - 1080×1440 (3:4) to match the card aspect; 720×960 also acceptable.
+//   - Keep under 1.5 MB per clip. H.264 mp4 with crf ~26 is the sweet spot.
+//   - Composition: slow product turn, oil pour, hand applying, etc.
+//     Match the mood of the still it replaces.
 export const products = [
   {
     id: 'fleur-cleansing-oil',
@@ -38,6 +50,8 @@ export const products = [
     origin: 'Formulated in Lyon',
     description: 'A high-stability vitamin C serum, suspended in a low-pH base for maximum bioavailability. Brightens, evens tone, defends against environmental pigmentation. Worn beneath SPF.',
     image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1200&q=85',
+    // Add a hover-video here when filmed — see filming notes at top of file.
+    // Example: video: '/videos/serum-lumiere.mp4',
     sizes: ['30ml', '50ml'],
   },
   {
