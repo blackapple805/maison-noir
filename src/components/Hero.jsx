@@ -8,7 +8,7 @@ export default function Hero() {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=2400&q=85"
+          src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=2400&q=85"
           alt=""
           className="w-full h-full object-cover opacity-70"
           style={{ filter: `grayscale(var(--image-grayscale))` }}
@@ -61,7 +61,7 @@ export default function Hero() {
           className="editorial-label [writing-mode:vertical-rl] rotate-180"
           style={{ color: 'var(--fg-faint)' }}
         >
-          Chapter One · Murmuration
+          Chapter One · The Ritual
         </motion.div>
       </div>
 
@@ -75,7 +75,7 @@ export default function Hero() {
             className="editorial-label mb-8"
             style={{ color: 'var(--accent)' }}
           >
-            — A study in shadow
+            — A study in skin
           </motion.p>
 
           <h1 className="font-display font-light leading-[0.88] tracking-tighter2 text-fg text-adaptive">
@@ -85,7 +85,7 @@ export default function Hero() {
               transition={{ delay: 0.4, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
               className="block text-6xl md:text-8xl lg:text-[10rem]"
             >
-              The Silence
+              The Quiet
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 40 }}
@@ -94,7 +94,7 @@ export default function Hero() {
               className="block text-6xl md:text-8xl lg:text-[10rem] italic pl-16 md:pl-40"
               style={{ color: 'var(--fg-muted)' }}
             >
-              of Form.
+              of Ritual.
             </motion.span>
           </h1>
 
@@ -105,14 +105,14 @@ export default function Hero() {
             className="mt-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8 max-w-3xl"
           >
             <p className="max-w-md leading-relaxed text-sm md:text-base text-adaptive" style={{ color: 'var(--fg-muted)' }}>
-              An offering of sculpted silhouettes, hand-tailored in the
-              ateliers of Florence and Paris. Each piece — a ritual.
+              An apothecary of formulations, hand-blended in the laboratories
+              of Grasse and Lyon. Each preparation — a ritual.
             </p>
             <Link
               to="/collection"
               className="group inline-flex items-center gap-3 editorial-label text-fg hover:text-accent transition-colors"
             >
-              <span className="link-line">Enter the Collection</span>
+              <span className="link-line">Enter the Apothecary</span>
               <span className="text-lg leading-none transform group-hover:translate-x-1 transition-transform">→</span>
             </Link>
           </motion.div>

@@ -82,18 +82,18 @@ function SearchOverlay() {
               transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="max-w-5xl mx-auto"
             >
-              <div className="editorial-label text-accent mb-3">— Search the atelier</div>
+              <div className="editorial-label text-accent mb-3">— Search the apothecary</div>
               <input
                 ref={inputRef}
                 type="text"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Pieces, materials, colorways…"
+                placeholder="Formulations, ingredients, rituals…"
                 className="w-full bg-transparent border-b hairline pb-4 text-3xl md:text-6xl font-display tracking-tighter2 outline-none focus:border-fg transition-colors placeholder:text-fg-faint"
               />
               <div className="flex items-center justify-between mt-4 editorial-label">
                 <span>
-                  {q.trim() ? `${results.length} piece${results.length === 1 ? '' : 's'}` : 'Begin typing'}
+                  {q.trim() ? `${results.length} formulation${results.length === 1 ? '' : 's'}` : 'Begin typing'}
                 </span>
                 <span className="text-fg-dim">Press ↵ to view</span>
               </div>
@@ -159,7 +159,7 @@ function SearchOverlay() {
             {q.trim() && results.length === 0 && (
               <div className="max-w-5xl mx-auto mt-16 text-center">
                 <p className="font-display italic text-3xl text-fg-muted mb-3">Nothing found.</p>
-                <p className="editorial-label">The piece you seek is not in this folio.</p>
+                <p className="editorial-label">The formulation you seek is not in this archive.</p>
               </div>
             )}
           </div>

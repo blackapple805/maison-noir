@@ -37,8 +37,8 @@ export default function Footer() {
             <h4 className="editorial-label text-bone/40 mb-5">Services</h4>
             <ul className="space-y-3 text-sm text-bone/80">
               <li><a className="link-line" href="#">Made to Measure</a></li>
-              <li><a className="link-line" href="#">Private Appointment</a></li>
-              <li><a className="link-line" href="#">Repair & Restoration</a></li>
+              <li><a className="link-line" href="#">Apothecary Consultation</a></li>
+              <li><a className="link-line" href="#">Refill & Recycling</a></li>
               <li><a className="link-line" href="#">Concierge</a></li>
             </ul>
           </div>
@@ -46,7 +46,7 @@ export default function Footer() {
             <h4 className="editorial-label text-bone/40 mb-5">Contact</h4>
             <ul className="space-y-3 text-sm text-bone/80">
               <li>+33 1 42 60 00 00</li>
-              <li>concierge@maisonnoir.atelier</li>
+              <li>concierge@maisonnoir.apothecary</li>
               <li className="text-bone/60 pt-2">
                 12 Rue de l'Université <br />
                 75007 Paris

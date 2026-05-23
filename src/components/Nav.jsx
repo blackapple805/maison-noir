@@ -54,7 +54,7 @@ export default function Nav() {
         <nav className="hidden md:flex items-center gap-10 editorial-label">
           <Link to="/collection" className="link-line hover:text-fg">Collection</Link>
           <Link to="/lookbook" className="link-line hover:text-fg">Lookbook</Link>
-          <Link to="/atelier" className="link-line hover:text-fg">Atelier</Link>
+          <Link to="/atelier" className="link-line hover:text-fg">Apothecary</Link>
           <Link to="/wishlist" className="link-line hover:text-fg flex items-center gap-1.5">
             Saved <span className="opacity-50">[{String(wishCount).padStart(2, '0')}]</span>
           </Link>

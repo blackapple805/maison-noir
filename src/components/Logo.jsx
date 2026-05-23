@@ -44,7 +44,7 @@ export default function Logo({ size = 28, withWordmark = true, className = '' })
             MAISON·NOIR
           </span>
           <span className="font-mono text-[8px] tracking-editorial uppercase opacity-50">
-            Atelier · MMXXVI
+            Apothecary · MMXXVI
           </span>
         </div>
       )}

@@ -11,7 +11,7 @@ export default function NotFound() {
         The page you sought is not held within this archive.
       </p>
       <Link to="/" className="editorial-label link-line hover:text-accent">
-        Return to the atelier →
+        Return to the apothecary →
       </Link>
     </div>
   )

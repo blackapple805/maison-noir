@@ -323,7 +323,7 @@ export default function Checkout() {
                 <div>
                   <div className="editorial-label text-fg-dim">Your Folio</div>
                   <div className="font-display text-2xl tracking-tighter2">
-                    {items.reduce((s, i) => s + i.qty, 0)} pieces
+                    {items.reduce((s, i) => s + i.qty, 0)} preparations
                   </div>
                 </div>
                 <Link to="/collection" className="editorial-label link-line hover:text-accent">
@@ -345,7 +345,7 @@ export default function Checkout() {
                       <div className="font-display text-lg leading-tight tracking-tighter2 truncate">
                         {item.product.name}
                       </div>
-                      <div className="editorial-label text-fg-dim mt-1">Size {item.size}</div>
+                      <div className="editorial-label text-fg-dim mt-1">Volume {item.size}</div>
                     </div>
                     <div className="font-mono text-sm whitespace-nowrap">
                       €{(item.product.price * item.qty).toLocaleString()}
@@ -368,7 +368,7 @@ export default function Checkout() {
               <div className="px-6 py-4 border-t hairline editorial-label text-fg-dim space-y-1.5">
                 <p>· Delivered in 3–5 business days</p>
                 <p>· Free returns within 30 days</p>
-                <p>· Lifetime atelier repair</p>
+                <p>· Lifetime refill program</p>
               </div>
             </div>
           </aside>
@@ -448,7 +448,7 @@ function ProcessingOverlay({ show }) {
           <div className="editorial-label text-accent mb-3">— Processing</div>
           <div className="font-display text-3xl italic text-fg-muted">Preparing your folio…</div>
           <div className="editorial-label mt-6 text-fg-dim max-w-xs text-center">
-            Verifying payment and reserving your pieces with the atelier.
+            Verifying payment and reserving your preparations from the apothecary.
           </div>
         </motion.div>
       )}

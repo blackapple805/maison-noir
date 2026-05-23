@@ -16,11 +16,11 @@ export default function Home() {
 
       <Marquee
         items={[
-          'Autumn / Winter 26',
-          'Hand-tailored in Florence',
-          'Made to Measure',
+          'Batch No. 26',
+          'Hand-blended in Grasse',
+          'Cold-pressed botanicals',
           'Complimentary global delivery',
-          'Private appointments by request',
+          'Apothecary consultations by request',
         ]}
       />
 
@@ -40,18 +40,18 @@ export default function Home() {
             <p className="editorial-label text-ox mb-8">— Chapter I</p>
             <h2 className="font-display text-5xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tighter2 mb-10">
               An obsession <br />
-              <span className="italic text-bone/70">with the cut.</span>
+              <span className="italic text-bone/70">with the formula.</span>
             </h2>
             <p className="text-bone/70 leading-relaxed max-w-md mb-10">
-              Every silhouette is constructed across seventeen stages, in
-              an atelier that has refused to change its rituals for three
-              generations. Beauty is method.
+              Every preparation passes through seventeen quiet stages, in
+              a laboratory that has refused to rush a formulation for three
+              generations. Care is method.
             </p>
             <Link
               to="/atelier"
               className="editorial-label link-line text-bone hover:text-ox transition-colors"
             >
-              Visit the Atelier →
+              Visit the Apothecary →
             </Link>
           </div>
 
@@ -64,16 +64,16 @@ export default function Home() {
               className="aspect-[4/5] overflow-hidden bg-char"
             >
               <img
-                src="https://images.unsplash.com/photo-1521334884684-d80222895322?w=1600&q=85"
-                alt="Atelier"
+                src="https://images.unsplash.com/photo-1612817288484-6f916006741a?w=1600&q=85"
+                alt="Apothecary"
                 className="w-full h-full object-cover grayscale-[15%]"
               />
             </motion.div>
             <div className="absolute -bottom-6 -left-6 md:-bottom-10 md:-left-10 bg-ox text-bone p-6 md:p-10 max-w-xs">
               <div className="editorial-label text-bone/80 mb-3">Folio · 002</div>
               <p className="font-display text-2xl md:text-3xl italic leading-tight">
-                "We do not follow seasons.
-                We compose chapters."
+                "We do not follow trends.
+                We compose rituals."
               </p>
               <div className="editorial-label text-bone/80 mt-4">— The House</div>
             </div>
@@ -83,32 +83,16 @@ export default function Home() {
 
       {/* Featured grid */}
       <section className="px-6 md:px-10 pb-32">
-        <div className="relative mb-16 pt-10">
-          {/* Organic divider — gentle wave, sits above all text */}
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 1200 24"
-            preserveAspectRatio="none"
-            className="absolute top-0 left-0 w-full h-6 opacity-50"
-          >
-            <path
-              d="M0,12 Q200,4 400,12 T800,12 T1200,12"
-              fill="none"
-              stroke="var(--hairline)"
-              strokeWidth="1"
-            />
-          </svg>
-          <div className="flex items-end justify-between pb-6">
-            <div>
-              <p className="editorial-label text-ox mb-3">— The Collection</p>
-              <h2 className="font-display text-4xl md:text-6xl tracking-tighter2 leading-none">
-                Selected Pieces
-              </h2>
-            </div>
-            <Link to="/collection" className="editorial-label link-line text-bone hover:text-ox">
-              View All ({String(products.length).padStart(2, '0')}) →
-            </Link>
+        <div className="flex items-end justify-between border-b hairline pb-6 mb-16">
+          <div>
+            <p className="editorial-label text-ox mb-3">— The Collection</p>
+            <h2 className="font-display text-4xl md:text-6xl tracking-tighter2 leading-none">
+              Selected Pieces
+            </h2>
           </div>
+          <Link to="/collection" className="editorial-label link-line text-bone hover:text-ox">
+            View All ({String(products.length).padStart(2, '0')}) →
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
@@ -140,7 +124,7 @@ export default function Home() {
             </p>
             <div className="grid grid-cols-2 gap-6 mb-10 max-w-md editorial-label">
               <div>
-                <div className="text-bone/40 mb-1">Materials</div>
+                <div className="text-bone/40 mb-1">Key Actives</div>
                 <div className="text-bone">{editorial.materials}</div>
               </div>
               <div>
@@ -152,7 +136,7 @@ export default function Home() {
               to={`/product/${editorial.id}`}
               className="inline-flex items-center gap-3 editorial-label link-line text-bone hover:text-ox"
             >
-              Study the piece →
+              Study the formulation →
             </Link>
           </div>
           <div className="aspect-[3/4] overflow-hidden bg-ink">

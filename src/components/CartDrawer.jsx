@@ -48,7 +48,7 @@ export default function CartDrawer() {
                 <div className="text-center py-20">
                   <p className="font-display italic text-2xl text-bone/60 mb-3">Empty.</p>
                   <p className="editorial-label text-bone/40">
-                    The atelier awaits your selection.
+                    The apothecary awaits your selection.
                   </p>
                 </div>
               ) : (

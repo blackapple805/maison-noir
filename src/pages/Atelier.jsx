@@ -10,16 +10,16 @@ export default function Atelier() {
           <span className="italic text-bone/70">slowness.</span>
         </h1>
         <p className="text-bone/70 max-w-2xl mt-12 leading-relaxed text-lg">
-          The atelier sits on Rue de l'Université in the seventh arrondissement.
-          Twelve craftsmen. Seventeen stages per garment. No collection has ever
-          been rushed. No piece has ever been duplicated for haste.
+          The apothecary sits on Rue de l'Université in the seventh arrondissement.
+          Twelve formulators. Seventeen stages per preparation. No batch has ever
+          been rushed. No formula has ever been compromised for speed.
         </p>
       </section>
 
       <section className="grid md:grid-cols-2 gap-1 mb-32">
         {[
-          'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=1200&q=85',
-          'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1200&q=85',
+          'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=1200&q=85',
+          'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=1200&q=85',
         ].map((src, i) => (
           <motion.div
             key={i}
@@ -36,9 +36,9 @@ export default function Atelier() {
 
       <section className="px-6 md:px-10 grid md:grid-cols-3 gap-16">
         {[
-          { n: '01', t: 'Pattern', d: 'Each pattern is drafted by hand on parchment, retained in the archive in perpetuity.' },
-          { n: '02', t: 'Cut', d: 'Cloth is rested for forty-eight hours before cutting. Grain follows the body.' },
-          { n: '03', t: 'Finish', d: 'Buttonholes hand-stitched in silk thread. The final pressing takes three hours.' },
+          { n: '01', t: 'Source', d: 'Botanicals are selected at origin — Grasse, the Atlas, the Pyrénées — and certified before they enter the apothecary.' },
+          { n: '02', t: 'Formulate', d: 'Each preparation rests forty-eight hours between stages. pH, viscosity, and stability are measured by hand.' },
+          { n: '03', t: 'Finish', d: 'Glass is sealed under cold conditions. Every bottle is hand-labeled, individually numbered, and dated to its batch.' },
         ].map((s, i) => (
           <motion.div
             key={i}

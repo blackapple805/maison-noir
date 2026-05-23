@@ -30,7 +30,7 @@ export default function Confirmation() {
           We could not locate this order.
         </p>
         <Link to="/" className="editorial-label link-line hover:text-accent">
-          Return to the atelier →
+          Return to the apothecary →
         </Link>
       </div>
     )
@@ -58,7 +58,7 @@ export default function Confirmation() {
                 <span className="italic text-fg-muted">{order.shipping.firstName}.</span>
               </h1>
               <p className="text-fg-muted max-w-xl leading-relaxed">
-                Your pieces are reserved with the atelier. A copy of this confirmation
+                Your preparations are reserved from the apothecary. A copy of this confirmation
                 has been sent to <span className="text-fg">{order.shipping.email}</span>.
               </p>
             </div>
@@ -99,7 +99,7 @@ export default function Confirmation() {
             {order.estimatedDelivery.start} — {order.estimatedDelivery.end}
           </div>
           <p className="text-fg-muted text-sm leading-relaxed">
-            Tracking details will be sent when your folio is dispatched from the atelier.
+            Tracking details will be sent when your folio is dispatched from the apothecary.
           </p>
         </Block>
 
@@ -193,18 +193,18 @@ export default function Confirmation() {
           <div>
             <p className="editorial-label text-accent mb-6">— A note from the House</p>
             <h3 className="font-display text-3xl md:text-5xl tracking-tighter2 leading-[0.95] mb-6">
-              Each piece is hand-finished <br />
+              Each preparation is hand-finished <br />
               <span className="italic text-fg-muted">and individually inspected.</span>
             </h3>
           </div>
           <div className="space-y-4 text-fg-muted leading-relaxed">
             <p>
-              Should any piece require repair, alteration, or restoration —
-              regardless of when it was acquired — write to our concierge.
-              The atelier maintains a perpetual record of every garment it has made.
+              Should any preparation arrive in less-than-perfect condition, or you wish to
+              schedule a consultation, write to our concierge.
+              The apothecary maintains a perpetual record of every formulation it has made.
             </p>
             <p className="editorial-label text-fg pt-2">
-              concierge@maisonnoir.atelier · +33 1 42 60 00 00
+              concierge@maisonnoir.apothecary · +33 1 42 60 00 00
             </p>
           </div>
         </div>

@@ -32,7 +32,7 @@ export default function LoadingScreen() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="absolute top-6 left-6 editorial-label"
           >
-            N° 26 · Loading the atelier
+            N° 26 · Preparing the apothecary
           </motion.div>
 
           <motion.div

@@ -79,21 +79,21 @@ export default function Product() {
           <div className="grid grid-cols-2 gap-y-5 editorial-label max-w-md border-y hairline py-8">
             <div className="text-bone/40">Reference</div>
             <div className="text-bone">MN-{product.id.toUpperCase()}</div>
-            <div className="text-bone/40">Colorway</div>
+            <div className="text-bone/40">Variant</div>
             <div className="text-bone">{product.colorway}</div>
-            <div className="text-bone/40">Materials</div>
+            <div className="text-bone/40">Key Actives</div>
             <div className="text-bone">{product.materials}</div>
             <div className="text-bone/40">Origin</div>
             <div className="text-bone">{product.origin}</div>
-            <div className="text-bone/40">Season</div>
+            <div className="text-bone/40">Batch</div>
             <div className="text-bone">{product.season}</div>
           </div>
 
-          {/* Size */}
+          {/* Volume */}
           <div>
             <div className="flex items-center justify-between mb-4 editorial-label">
-              <span className="text-bone/60">Select Size</span>
-              <button className="link-line text-bone/60 hover:text-bone">Size Guide</button>
+              <span className="text-bone/60">Select Volume</span>
+              <button className="link-line text-bone/60 hover:text-bone">Ingredients</button>
             </div>
             <div className="flex flex-wrap gap-2">
               {product.sizes.map((s) => (
@@ -114,7 +114,7 @@ export default function Product() {
               ))}
             </div>
             {error && (
-              <p className="editorial-label text-ox mt-3">— Select a size first.</p>
+              <p className="editorial-label text-ox mt-3">— Select a volume first.</p>
             )}
           </div>
 
@@ -133,13 +133,13 @@ export default function Product() {
               Add to Bag
             </button>
             <button className="w-full py-5 border hairline editorial-label text-bone hover:border-bone transition-colors">
-              Request Private Appointment
+              Request Apothecary Consultation
             </button>
           </div>
 
           <div className="editorial-label text-bone/40 space-y-2 pt-4 border-t hairline">
             <p>· Complimentary worldwide delivery in 3–5 days.</p>
-            <p>· Lifetime atelier repair guarantee.</p>
+            <p>· Lifetime refill program.</p>
             <p>· Hand-finished and individually inspected.</p>
           </div>
         </motion.div>
