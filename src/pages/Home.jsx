@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Hero from '../components/Hero'
 import Marquee from '../components/Marquee'
 import ProductCard from '../components/ProductCard'
+import AmorphousBlob from '../components/AmorphousBlob'
 import { products } from '../data/products'
 
 export default function Home() {
@@ -24,8 +25,17 @@ export default function Home() {
       />
 
       {/* Editorial split */}
-      <section className="px-6 md:px-10 py-32 md:py-44">
-        <div className="grid md:grid-cols-12 gap-8 md:gap-16 items-end">
+      <section className="relative px-6 md:px-10 py-32 md:py-44 overflow-hidden">
+        <AmorphousBlob
+          variant="melted"
+          color="var(--accent-deep)"
+          size="45vw"
+          opacity={0.12}
+          blur={100}
+          duration={30}
+          style={{ top: '20%', right: '-15vw' }}
+        />
+        <div className="relative grid md:grid-cols-12 gap-8 md:gap-16 items-end">
           <div className="md:col-span-5">
             <p className="editorial-label text-ox mb-8">— Chapter I</p>
             <h2 className="font-display text-5xl md:text-7xl lg:text-8xl leading-[0.9] tracking-tighter2 mb-10">
@@ -73,16 +83,32 @@ export default function Home() {
 
       {/* Featured grid */}
       <section className="px-6 md:px-10 pb-32">
-        <div className="flex items-end justify-between border-b hairline pb-6 mb-16">
-          <div>
-            <p className="editorial-label text-ox mb-3">— The Collection</p>
-            <h2 className="font-display text-4xl md:text-6xl tracking-tighter2 leading-none">
-              Selected Pieces
-            </h2>
+        <div className="relative mb-16 pt-10">
+          {/* Organic divider — gentle wave, sits above all text */}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 1200 24"
+            preserveAspectRatio="none"
+            className="absolute top-0 left-0 w-full h-6 opacity-50"
+          >
+            <path
+              d="M0,12 Q200,4 400,12 T800,12 T1200,12"
+              fill="none"
+              stroke="var(--hairline)"
+              strokeWidth="1"
+            />
+          </svg>
+          <div className="flex items-end justify-between pb-6">
+            <div>
+              <p className="editorial-label text-ox mb-3">— The Collection</p>
+              <h2 className="font-display text-4xl md:text-6xl tracking-tighter2 leading-none">
+                Selected Pieces
+              </h2>
+            </div>
+            <Link to="/collection" className="editorial-label link-line text-bone hover:text-ox">
+              View All ({String(products.length).padStart(2, '0')}) →
+            </Link>
           </div>
-          <Link to="/collection" className="editorial-label link-line text-bone hover:text-ox">
-            View All ({String(products.length).padStart(2, '0')}) →
-          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">

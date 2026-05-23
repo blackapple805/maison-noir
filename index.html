@@ -2,6 +2,25 @@
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
+    <!-- Security: Content Security Policy
+         Allows: self-hosted assets, Google Fonts (used), Unsplash images (hero),
+         inline styles (Tailwind + framer-motion), inline scripts (theme bootstrap).
+         Adjust 'connect-src' if you later add an API. -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      img-src 'self' data: blob: https://images.unsplash.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      script-src 'self' 'unsafe-inline';
+      connect-src 'self';
+      frame-ancestors 'none';
+      base-uri 'self';
+      form-action 'self';
+      object-src 'none';
+      upgrade-insecure-requests
+    " />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M20 1 L39 20 L20 39 L1 20 Z' stroke='%23E8E2D5' stroke-opacity='0.35' stroke-width='0.75' fill='%230A0A0A'/%3E%3Cpath d='M20 4 L36 20 L20 20 L4 20 Z' fill='%23E8E2D5' fill-opacity='0.95'/%3E%3Cpath d='M20 20 L28 36 L20 28 L12 36 Z' fill='%23E8E2D5'/%3E%3Ccircle cx='20' cy='20' r='1.6' fill='%239C1B2A'/%3E%3C/svg%3E" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0A0A0A" media="(prefers-color-scheme: dark)" />
