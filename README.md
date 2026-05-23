@@ -2,9 +2,9 @@
 
 # MAISON·NOIR
 
-**An editorial fashion storefront built with React, Vite & Tailwind.**
+**An editorial apothecary storefront built with React, Vite & Tailwind.**
 
-A dark luxury e-commerce concept inspired by Alexander McQueen, Rick Owens, and the editorial conventions of high-end fashion publishing.
+A dark luxury skincare concept — quiet typography, slow animation, and a checkout flow treated with as much care as the product photography.
 
 [![React](https://img.shields.io/badge/React-18-149ECA?logo=react&logoColor=white)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
@@ -18,52 +18,11 @@ A dark luxury e-commerce concept inspired by Alexander McQueen, Rick Owens, and 
 
 ## Overview
 
-**MAISON·NOIR** is a fictional editorial atelier — a brand concept exploring what a high-end fashion storefront looks like when treated like a publication rather than a product catalog. Every layout, micro-interaction, and piece of copy was designed around a single point of view: *clothing as ritual, the storefront as folio*.
+**MAISON·NOIR** is a fictional independent apothecary — a brand concept exploring what a high-end skincare house looks like when treated like a publication rather than a product catalog. Every layout, micro-interaction, and piece of copy was designed around a single point of view: *care as ritual, the storefront as folio*.
+
+The house composes formulations in small batches between Grasse and Lyon. Twelve formulators, seventeen stages, no rush.
 
 This is a frontend-only project. All products, transactions, and orders are mock — but the checkout flow, validation, and PDF invoice generation are fully functional client-side.
-
----
-
-## Screenshots
-## Screenshots
-
-### Home
-![Hero — Dark](./screenshots/hero-dark.png)
-![Hero — Light](./screenshots/hero-light.png)
-
-### Collection
-![Collection Grid — Dark](./screenshots/collection-dark.png)
-![Collection Grid — Light](./screenshots/collection-light.png)
-
-### Product
-![Product Detail](./screenshots/product.png)
-
-### Checkout & Confirmation
-![Confirmation — Light](./screenshots/confirmation-light.png)
-![Confirmation — Dark](./screenshots/confirmation-dark.png)
-![PDF Invoice](./screenshots/invoice.png)
-
-### Brand Details
-![Loading Screen](./screenshots/loading-screen.png)
-![Marquee](./screenshots/marquee.png)
-
-```
-/screenshots
-  hero-dark.png
-  hero-light.png
-  collection.png
-  product.png
-  lookbook.png
-  checkout.png
-  confirmation.png
-  invoice.png
-```
-
-<!--
-![Hero](./screenshots/hero-dark.png)
-![Collection](./screenshots/collection.png)
-![Checkout](./screenshots/checkout.png)
--->
 
 ---
 
@@ -73,7 +32,9 @@ This is a frontend-only project. All products, transactions, and orders are mock
 - **Dual theme** (auto-detects OS preference, manual toggle persists across sessions)
 - **Custom typography stack** — Cormorant Garamond (display), Inter Tight (body), JetBrains Mono (labels)
 - **CSS-variable architecture** — every color flows from `:root` tokens for true theme parity
-- **Editorial details** — grain overlays, radial gradients, hairline borders, rotated vertical text, marquee tickers, Roman numerals
+- **Editorial details** — grain overlays, hairline borders, rotated vertical text, marquee tickers, Roman numerals, "N°" and "Folio" notation throughout
+- **Ambient amorphous accents** — animated soft blobs that drift behind hero and feature sections
+- **Ambient field** — global subtle texture layer for atmospheric depth
 
 ### Brand Identity
 - **Custom SVG sigil** — drawn from scratch as a React component, scales infinitely, inherits theme color
@@ -83,10 +44,22 @@ This is a frontend-only project. All products, transactions, and orders are mock
 - **Cinematic hero** with staggered text reveals and parallax-ready layout
 - **Filterable collection grid** with category routing via URL params
 - **Product detail page** with sticky info panel, multi-image stack, full specs
-- **Quick-view modal** — preview products without leaving the grid (Esc to close)
-- **Full-screen search** — `Cmd/Ctrl+K` shortcut, live filtering across name, category, colorway, and materials
+- **Quick-view modal** — preview products without leaving the grid (`Esc` to close)
+- **Full-screen search** — `Cmd/Ctrl + K` shortcut, live filtering across name, category, colorway, and materials
 - **Wishlist** — heart icon on every card, persists across sessions via `localStorage`
-- **Editorial lookbook** — parallax full-bleed spreads with scroll-triggered storytelling
+- **Editorial lookbook** — parallax full-bleed spreads with scroll-triggered storytelling, per-spread overlay tuning to keep type legible against varying photography
+
+### House & Services Pages
+The footer connects to a full set of editorial pages:
+
+- **Atelier** — the practice of slowness, seventeen stages, twelve formulators
+- **Heritage** — chronology of the house from 1947 to MMXXVI
+- **Journal** — editorial spreads (alias of Lookbook)
+- **Boutiques** — Paris, Grasse, and New York with hours, addresses, and coordinates
+- **Made to Measure** — bespoke twelve-week commission flow with phased timeline
+- **Apothecary Consultation** — three reading formats (complimentary, seasonal review, deep consultation)
+- **Refill & Recycling** — circular glass programme with returns and stats
+- **Concierge** — working contact form with client-side state and confirmation reference
 
 ### Cart & Checkout
 - **Sliding cart drawer** with quantity controls and body-scroll lock
@@ -100,17 +73,18 @@ This is a frontend-only project. All products, transactions, and orders are mock
   - Full `autocomplete` hints for browser autofill
 - **Processing animation** between submit and confirmation
 - **Order confirmation** with order number, delivery estimate, address echo, and itemized breakdown
-- **Real PDF invoice** generated client-side with jsPDF (lazy-loaded — only ~120 KB downloads when the user clicks the button)
+- **Real PDF invoice** generated client-side with jsPDF (lazy-loaded — only downloads when the user clicks the button)
 - **Order persistence** — confirmation page works after refresh, history saved to `localStorage`
 
 ### Performance & Accessibility
 - Lazy-loaded heavy dependencies (jsPDF)
 - All images use native `loading="lazy"`
 - Theme applied before first paint (no flash of wrong theme)
-- Keyboard navigation (`Cmd/Ctrl+K` for search, `Esc` closes modals)
+- Keyboard navigation (`Cmd/Ctrl + K` for search, `Esc` closes modals)
 - ARIA labels on icon-only buttons
 - Decorative duplicate content marked `aria-hidden`
 - 404 page for unknown routes
+- Graceful image fallbacks (broken sources hide silently rather than collapsing layouts)
 
 ---
 
@@ -124,9 +98,10 @@ This is a frontend-only project. All products, transactions, and orders are mock
 | **Motion** | Framer Motion 11 |
 | **Routing** | React Router 6 |
 | **PDF Generation** | jsPDF (lazy-loaded) |
+| **Icons** | Lucide React |
 | **State** | React Context + `useReducer` |
 | **Persistence** | `localStorage` (wishlist, theme, orders) + `sessionStorage` (loading screen) |
-| **Type Safety** | Plain JS (no TypeScript — kept simple for portfolio readability) |
+| **Type Safety** | Plain JS (kept simple for portfolio readability) |
 
 ---
 
@@ -168,46 +143,54 @@ The production build outputs to `/dist`.
 ```
 src/
 ├── components/
-│   ├── Nav.jsx              # Top navigation with theme toggle
-│   ├── Hero.jsx             # Cinematic landing hero
-│   ├── Logo.jsx             # SVG sigil + wordmark
-│   ├── Marquee.jsx          # Scrolling editorial ticker
-│   ├── ProductCard.jsx      # Grid card with quick-view + wishlist
-│   ├── CartDrawer.jsx       # Sliding bag panel
-│   ├── QuickView.jsx        # Product preview modal
-│   ├── SearchOverlay.jsx    # Cmd+K full-screen search
-│   ├── ThemeToggle.jsx      # Sun/moon switcher
-│   ├── LoadingScreen.jsx    # First-visit brand intro
-│   ├── Footer.jsx           # Site footer with newsletter
-│   └── Field.jsx            # Reusable form input
+│   ├── Nav.jsx                    # Top navigation with theme toggle
+│   ├── Hero.jsx                   # Cinematic landing hero
+│   ├── Logo.jsx                   # SVG sigil + wordmark
+│   ├── Marquee.jsx                # Scrolling editorial ticker
+│   ├── ProductCard.jsx            # Grid card with quick-view + wishlist
+│   ├── CartDrawer.jsx             # Sliding bag panel
+│   ├── QuickView.jsx              # Product preview modal
+│   ├── SearchOverlay.jsx          # Cmd+K full-screen search
+│   ├── ThemeToggle.jsx            # Sun/moon switcher
+│   ├── LoadingScreen.jsx          # First-visit brand intro
+│   ├── AmbientField.jsx           # Global atmospheric texture
+│   ├── AmorphousBlob.jsx          # Animated soft accent shape
+│   ├── Footer.jsx                 # Site footer with newsletter + links
+│   └── Field.jsx                  # Reusable form input
 │
 ├── context/
-│   ├── ThemeContext.jsx     # Dark/light theme, system preference
-│   ├── CartContext.jsx      # Cart state + reducer
-│   ├── WishlistContext.jsx  # Saved pieces persistence
-│   └── OrderContext.jsx     # Order placement and history
+│   ├── ThemeContext.jsx           # Dark/light theme, system preference
+│   ├── CartContext.jsx            # Cart state + reducer
+│   ├── WishlistContext.jsx        # Saved pieces persistence
+│   └── OrderContext.jsx           # Order placement and history
 │
 ├── pages/
-│   ├── Home.jsx             # Landing
-│   ├── Collection.jsx       # Filterable product grid
-│   ├── Product.jsx          # Product detail
-│   ├── Lookbook.jsx         # Editorial scroll spreads
-│   ├── Atelier.jsx          # Brand story
-│   ├── Wishlist.jsx         # Saved pieces
-│   ├── Checkout.jsx         # Two-column form flow
-│   ├── Confirmation.jsx     # Order confirmation + PDF
-│   └── NotFound.jsx         # 404
+│   ├── Home.jsx                   # Landing
+│   ├── Collection.jsx             # Filterable product grid
+│   ├── Product.jsx                # Product detail
+│   ├── Lookbook.jsx               # Editorial scroll spreads
+│   ├── Atelier.jsx                # The practice
+│   ├── Heritage.jsx               # Chronology of the house
+│   ├── Boutiques.jsx              # Physical locations
+│   ├── MadeToMeasure.jsx          # Bespoke commission
+│   ├── ApothecaryConsultation.jsx # Reading formats
+│   ├── RefillRecycling.jsx        # Circular glass programme
+│   ├── Concierge.jsx              # Contact form
+│   ├── Wishlist.jsx               # Saved pieces
+│   ├── Checkout.jsx               # Two-column form flow
+│   ├── Confirmation.jsx           # Order confirmation + PDF
+│   └── NotFound.jsx               # 404
 │
 ├── data/
-│   └── products.js          # Mock catalog
+│   └── products.js                # Mock formulary
 │
 ├── utils/
-│   ├── card.js              # Luhn, brand detection, formatters
-│   └── invoice.js           # jsPDF invoice generator
+│   ├── card.js                    # Luhn, brand detection, formatters
+│   └── invoice.js                 # jsPDF invoice generator
 │
-├── App.jsx                  # Routes + providers
-├── main.jsx                 # Entry point
-└── index.css                # Tailwind + CSS variable tokens
+├── App.jsx                        # Routes + providers
+├── main.jsx                       # Entry point
+└── index.css                      # Tailwind + CSS variable tokens
 ```
 
 ---
@@ -217,11 +200,18 @@ src/
 | Path | Description |
 |------|-------------|
 | `/` | Home |
-| `/collection` | Product grid |
-| `/collection?cat=Tailoring` | Filtered by category |
+| `/collection` | Formulary grid |
+| `/collection?cat=Serums` | Filtered by category |
 | `/product/:id` | Product detail |
 | `/lookbook` | Editorial spreads |
-| `/atelier` | Brand story |
+| `/journal` | Alias of Lookbook |
+| `/atelier` | The practice |
+| `/heritage` | Chronology |
+| `/boutiques` | Locations |
+| `/made-to-measure` | Bespoke commission |
+| `/consultation` | Apothecary consultation |
+| `/refill` | Refill & recycling |
+| `/concierge` | Contact form |
 | `/wishlist` | Saved pieces |
 | `/checkout` | Checkout flow |
 | `/confirmation/:number` | Order confirmation |
@@ -268,15 +258,15 @@ Replace mock data in `src/data/products.js`. Each product needs:
 {
   id: 'unique-slug',
   name: 'Display Name',
-  category: 'Outerwear',
-  season: 'AW26 / 01',
-  price: 4280,
-  colorway: 'Carrion Black',
-  materials: 'Wool · Silk',
-  origin: 'Hand-tailored in Florence',
+  category: 'Serums',
+  season: 'Batch 26 / 01',
+  price: 142,
+  colorway: 'Vitamin C',
+  materials: 'L-Ascorbic Acid · Ferulic Acid · Vitamin E',
+  origin: 'Formulated in Lyon',
   description: 'Long-form editorial description.',
   image: 'https://path-to-image.jpg',
-  sizes: ['S', 'M', 'L'],
+  sizes: ['30ml', '50ml'],
 }
 ```
 
@@ -285,6 +275,12 @@ Edit `src/components/Hero.jsx` and replace the Unsplash URL.
 
 ### Lookbook spreads
 Edit the `spreads` array in `src/pages/Lookbook.jsx`.
+
+### Boutique locations
+Edit the `boutiques` array in `src/pages/Boutiques.jsx`.
+
+### Concierge form endpoint
+The form in `src/pages/Concierge.jsx` currently captures messages client-side only. To wire it to a real backend, replace the body of `handleSubmit` with a `fetch()` call to your provider of choice (Formspree, Resend, EmailJS, or a custom endpoint).
 
 ---
 
@@ -318,6 +314,8 @@ Or connect the GitHub repo at [vercel.com/new](https://vercel.com/new) for autom
 Build command: `npm run build`
 Publish directory: `dist`
 
+A `public/_headers` file is included for Netlify and Cloudflare Pages.
+
 ### Other hosts
 Any static host works. Build with `npm run build` and serve the `/dist` folder.
 
@@ -327,9 +325,10 @@ Any static host works. Build with `npm run build` and serve the `/dist` folder.
 
 Potential next steps if extending into a real project:
 
+- [ ] Wire the Concierge form to a real email service (Resend / Formspree)
+- [ ] Wire the newsletter subscription form to an audience provider
 - [ ] Real backend (Supabase / Firebase) for products and orders
 - [ ] Real payment (Stripe Checkout or Elements)
-- [ ] Real transactional email (Resend, EmailJS, or SendGrid)
 - [ ] Customer accounts with order history
 - [ ] CMS integration (Sanity, Contentful) for product editing
 - [ ] Multi-language support (i18n)
@@ -337,6 +336,7 @@ Potential next steps if extending into a real project:
 - [ ] Real shipping rate API (EasyPost, ShipStation)
 - [ ] Inventory management
 - [ ] Analytics (Plausible, PostHog)
+- [ ] Real refill return label generation
 
 ---
 
@@ -344,7 +344,7 @@ Potential next steps if extending into a real project:
 
 - **Product photography** — [Unsplash](https://unsplash.com) (CC0 license)
 - **Typefaces** — [Google Fonts](https://fonts.google.com)
-- **Icons** — Custom SVG, hand-drawn
+- **Icons** — [Lucide](https://lucide.dev) + custom SVG
 
 ---
 
