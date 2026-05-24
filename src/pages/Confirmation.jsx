@@ -117,7 +117,14 @@ export default function Confirmation() {
 
         <Block title="Payment" label="03">
           <div className="font-display text-xl tracking-tighter2 mb-3">
-            {(order.payment.brand || 'Card').toUpperCase()} ending {order.payment.last4}
+            {(order.payment.brand || 'Card').toUpperCase()} ending {
+              // Defensive normalization: strip non-digits and clamp to the
+              // last 4. Legacy orders in localStorage from earlier dev
+              // sessions could have malformed last4 values (e.g. "11111" or
+              // a leading space) — this guarantees we always render exactly
+              // four digits regardless of what's stored.
+              String(order.payment.last4 || '').replace(/\D/g, '').slice(-4).padStart(4, '•')
+            }
           </div>
           <p className="text-fg-muted text-sm leading-relaxed">
             {order.payment.name}<br />

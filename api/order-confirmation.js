@@ -671,7 +671,10 @@ export default async function handler(req, res) {
     }
 
     const safePayment = {
-      last4: clean(order.payment?.last4, 4),
+      // Force-normalize to digits-only, exactly 4 chars max. Defends
+      // against any malformed input from older localStorage records or
+      // tampered client payloads (e.g. "VISA1111" or a leading space).
+      last4: String(order.payment?.last4 || '').replace(/\D/g, '').slice(-4),
     }
 
     const safeOrder = {
