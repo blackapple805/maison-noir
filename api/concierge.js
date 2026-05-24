@@ -67,11 +67,25 @@ const AUDIT_TTL_SECONDS = 60 * 60 * 24 * 30
 
 // Hosts allowed to call this endpoint. Localhost stays for `vercel dev`
 // and the production domain stays for the live site.
-const ALLOWED_ORIGINS = new Set([
+const ALLOWED_ORIGINS_EXACT = new Set([
   'https://maison-noir-gray.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
 ])
+
+// Match Vercel preview deploys for this project. Vercel generates URLs
+// like maison-noir-iysi6q6ek-erics-projects-2a59ff38.vercel.app on every
+// push. We allow them by pattern instead of hard-coding each one.
+const ALLOWED_ORIGIN_PATTERNS = [
+  /^https:\/\/maison-noir-[a-z0-9-]+\.vercel\.app$/,
+  /^https:\/\/maison-noir-[a-z0-9-]+-erics-projects-[a-z0-9]+\.vercel\.app$/,
+]
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true                            // same-origin requests sometimes omit the header
+  if (ALLOWED_ORIGINS_EXACT.has(origin)) return true
+  return ALLOWED_ORIGIN_PATTERNS.some((re) => re.test(origin))
+}
 
 // ---------------------------------------------------------------
 // Helpers
@@ -178,9 +192,9 @@ async function writeAudit(redis, entry) {
 // ---------------------------------------------------------------
 
 export default async function handler(req, res) {
-  // CORS — only respond to our own origin. Other origins get a hard 403.
+  // CORS — only respond to our own origins (production + previews + localhost).
   const origin = req.headers.origin || ''
-  if (origin && !ALLOWED_ORIGINS.has(origin)) {
+  if (!isAllowedOrigin(origin)) {
     return res.status(403).json({ ok: false })
   }
 
