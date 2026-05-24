@@ -334,11 +334,8 @@ export default function Checkout() {
               <ul className="px-6 py-4 space-y-4 max-h-[400px] overflow-y-auto">
                 {items.map((item) => (
                   <li key={item.key} className="flex gap-4">
-                    <div className="w-16 h-20 bg-bg shrink-0 overflow-hidden relative">
+                    <div className="w-16 h-20 bg-bg shrink-0 overflow-hidden">
                       <img src={item.product.image} alt="" className="w-full h-full object-cover" />
-                      <span className="absolute -top-2 -right-2 w-5 h-5 bg-fg text-bg rounded-full text-[10px] font-mono flex items-center justify-center">
-                        {item.qty}
-                      </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="editorial-label text-fg-dim mb-1 truncate">{item.product.category}</div>
