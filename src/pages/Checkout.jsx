@@ -138,6 +138,20 @@ export default function Checkout() {
       totals: { subtotal, shipping, vat, total: grand },
     })
 
+    // Fire-and-forget order confirmation email.
+    // This MUST NOT block navigation or fail the order if email is down —
+    // the order exists locally either way. Errors are logged for diagnostics
+    // and the confirmation page will still load.
+    fetch('/api/order-confirmation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order }),
+    }).catch((err) => {
+      // Intentionally silent in production; the user already has their
+      // on-screen confirmation. Surface only in dev console.
+      if (import.meta.env.DEV) console.warn('Order confirmation email failed:', err)
+    })
+
     // Clear cart
     items.forEach((i) => dispatch({ type: 'REMOVE', key: i.key }))
     navigate(`/confirmation/${order.number}`, { replace: true })
