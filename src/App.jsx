@@ -27,6 +27,12 @@ import ApothecaryConsultation from './pages/ApothecaryConsultation'
 import RefillRecycling from './pages/RefillRecycling'
 import Concierge from './pages/Concierge'
 
+// Legal pages
+import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
+import Cookies from './pages/Cookies'
+import ModernSlavery from './pages/ModernSlavery'
+
 function ScrollToTop() {
   const { pathname } = useLocation()
   useEffect(() => window.scrollTo(0, 0), [pathname])
@@ -62,6 +68,12 @@ export default function App() {
             <Route path="/consultation" element={<ApothecaryConsultation />} />
             <Route path="/refill" element={<RefillRecycling />} />
             <Route path="/concierge" element={<Concierge />} />
+
+            {/* Legal */}
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/modern-slavery" element={<ModernSlavery />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

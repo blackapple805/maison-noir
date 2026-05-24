@@ -1,0 +1,12 @@
+# MAISON·NOIR — robots.txt
+# Replace https://maison-noir.vercel.app with your production URL before deploy.
+
+User-agent: *
+Allow: /
+
+# Don't index transient/order-specific pages
+Disallow: /checkout
+Disallow: /confirmation/
+
+# Sitemap
+Sitemap: https://maison-noir.vercel.app/sitemap.xml
