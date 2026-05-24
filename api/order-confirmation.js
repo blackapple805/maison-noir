@@ -133,6 +133,24 @@ function fmtEur(n) {
   return '€' + v.toLocaleString('en-GB', { maximumFractionDigits: 2 })
 }
 
+/**
+ * Title-case a customer's name for display in the greeting. Handles
+ * lowercase ("eric" → "Eric"), all-caps ("ERIC" → "Eric"), hyphenated
+ * ("marie-élise" → "Marie-Élise"), apostrophes ("o'brien" → "O'Brien"),
+ * and accented / non-Latin characters. The Unicode `\p{L}` class is
+ * what makes the accented and non-Latin cases work.
+ *
+ * Why we bother: customers often type names hurriedly at checkout
+ * (lowercase, all-caps, mixed). Echoing that back in a luxury receipt
+ * reads as careless. A Maison takes a beat to greet you properly.
+ */
+function titleCase(s) {
+  if (typeof s !== 'string' || !s) return ''
+  return s
+    .toLocaleLowerCase()
+    .replace(/(^|[\s'\-])(\p{L})/gu, (_, sep, ch) => sep + ch.toLocaleUpperCase())
+}
+
 function pad(s, len) {
   const str = String(s)
   if (str.length >= len) return str.slice(0, len)
@@ -173,7 +191,8 @@ async function writeAudit(redis, entry) {
 // ---------------------------------------------------------------
 
 function composeReceiptText(order, firstName) {
-  const greeting = firstName ? `Dear ${firstName},` : `Dear friend,`
+  const displayName = titleCase(firstName)
+  const greeting = displayName ? `Dear ${displayName},` : `Dear friend,`
   const itemLines = order.items.map((it) => {
     const left = `${pad(it.name, 32)} ${pad(it.size || '', 8)}`
     const right = `× ${it.qty}   ${fmtEur(it.lineTotal)}`
@@ -256,7 +275,8 @@ function composeReceiptText(order, firstName) {
  * from inverting colors in dark mode. We design dark-on-dark intentionally.
  */
 function composeReceiptHtml(order, firstName) {
-  const greeting = firstName ? `Dear ${escHtml(firstName)},` : `Dear friend,`
+  const displayName = titleCase(firstName)
+  const greeting = displayName ? `Dear ${escHtml(displayName)},` : `Dear friend,`
   const placed = new Date(order.placedAt).toLocaleString('en-GB', {
     weekday: 'long',
     day: 'numeric',
