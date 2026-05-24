@@ -252,27 +252,43 @@ function composeReceiptText(order, firstName) {
 // ---------------------------------------------------------------
 // HTML VERSION (the editorial one)
 // ---------------------------------------------------------------
+// HTML VERSION — adaptive (light default, dark via prefers-color-scheme)
+// ---------------------------------------------------------------
 
 /**
  * Editorial HTML email. Table-based layout because Outlook still uses
  * Word's HTML renderer, which doesn't understand modern CSS. Every style
  * is inlined because Gmail strips <style> blocks in many contexts.
  *
- * Type system:
- *   Display: Georgia, serif fallback — approximates Cormorant in clients
- *            that don't load web fonts (most of them)
- *   Body:    -apple-system, Helvetica Neue, Helvetica, Arial — clean sans
- *   Mono:    Consolas, Menlo, monospace — for labels
+ * Theme strategy:
+ *   - Base/inline styles are the LIGHT theme. This is what Gmail Web
+ *     and Outlook Desktop will always show, because both strip or
+ *     ignore @media (prefers-color-scheme).
+ *   - A <style> block in <head> declares dark-mode overrides for
+ *     clients that DO honor prefers-color-scheme (Apple Mail, iOS
+ *     Mail, modern Outlook, Gmail mobile in some configurations).
+ *   - Every element that needs to swap colors carries a CSS class
+ *     in addition to its inline style. The inline style wins by
+ *     default; the @media rule's class selector wins when active.
  *
- * Color system:
- *   --bg:  #0A0A0A  (near-black)
- *   --fg:  #E8E2D5  (warm bone)
- *   --dim: #A09A8A  (60% bone)
- *   --rule:#2A2A2A  (hairline)
- *   --ox:  #9C1B2A  (accent oxblood)
+ * Color systems:
+ *   LIGHT (default):
+ *     --bg:   #F2EDE2  (warm bone)
+ *     --fg:   #161210  (deep ink)
+ *     --dim:  #6C645A  (muted ink)
+ *     --rule: #DDD3C0  (hairline)
+ *     --ox:   #7A1220  (deeper oxblood — reads on cream)
  *
- * The email is set to its own color-scheme to prevent Gmail/Apple Mail
- * from inverting colors in dark mode. We design dark-on-dark intentionally.
+ *   DARK (via media query):
+ *     --bg:   #0A0A0A
+ *     --fg:   #E8E2D5
+ *     --dim:  #A09A8A
+ *     --rule: #2A2A2A
+ *     --ox:   #9C1B2A
+ *
+ * Note on product images: grayscale filters can be applied in CSS,
+ * but most mail clients ignore CSS filters on <img>. Images render
+ * as-is; we accept this and trust the source photography.
  */
 function composeReceiptHtml(order, firstName) {
   const displayName = titleCase(firstName)
@@ -287,30 +303,33 @@ function composeReceiptHtml(order, firstName) {
   const itemRows = order.items.map((it, i) => {
     const img = safeImageUrl(it.image)
     const last = i === order.items.length - 1
+    // The inline border-bottom is the LIGHT value; .row-rule class
+    // overrides it in dark mode. We need both because Gmail Web ignores
+    // the class and only renders inline.
     return `
       <tr>
-        <td style="padding:20px 0;border-bottom:${last ? 'none' : '1px solid #2A2A2A'};">
+        <td class="row-cell row-rule" style="padding:20px 0;border-bottom:${last ? 'none' : '1px solid #DDD3C0'};">
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
             <tr>
               <td valign="top" width="80" style="padding-right:20px;">
                 ${
                   img
-                    ? `<img src="${escHtml(img)}" alt="${escHtml(it.name)}" width="80" height="100" style="display:block;width:80px;height:100px;object-fit:cover;background:#1C1C1C;border:1px solid #2A2A2A;" />`
-                    : `<div style="width:80px;height:100px;background:#1C1C1C;border:1px solid #2A2A2A;"></div>`
+                    ? `<img src="${escHtml(img)}" alt="${escHtml(it.name)}" width="80" height="100" class="thumb" style="display:block;width:80px;height:100px;object-fit:cover;background:#EBE5D7;border:1px solid #DDD3C0;" />`
+                    : `<div class="thumb-blank" style="width:80px;height:100px;background:#EBE5D7;border:1px solid #DDD3C0;"></div>`
                 }
               </td>
-              <td valign="top" style="color:#E8E2D5;font-family:Georgia,'Times New Roman',serif;">
-                <div style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#A09A8A;margin-bottom:6px;">
+              <td valign="top" class="t-fg" style="color:#161210;font-family:Georgia,'Times New Roman',serif;">
+                <div class="t-dim mono" style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#6C645A;margin-bottom:6px;">
                   ${escHtml(it.category || '')}
                 </div>
-                <div style="font-size:20px;line-height:1.2;margin-bottom:6px;color:#E8E2D5;">
+                <div class="t-fg" style="font-size:20px;line-height:1.2;margin-bottom:6px;color:#161210;">
                   ${escHtml(it.name)}
                 </div>
-                <div style="font-family:Consolas,Menlo,monospace;font-size:11px;color:#A09A8A;letter-spacing:0.04em;">
+                <div class="t-dim mono" style="font-family:Consolas,Menlo,monospace;font-size:11px;color:#6C645A;letter-spacing:0.04em;">
                   Volume ${escHtml(it.size || '—')} · Quantity ${it.qty}
                 </div>
               </td>
-              <td valign="top" align="right" style="font-family:Consolas,Menlo,monospace;font-size:13px;color:#E8E2D5;white-space:nowrap;padding-left:20px;">
+              <td valign="top" align="right" class="t-fg mono" style="font-family:Consolas,Menlo,monospace;font-size:13px;color:#161210;white-space:nowrap;padding-left:20px;">
                 ${escHtml(fmtEur(it.lineTotal))}
               </td>
             </tr>
@@ -319,7 +338,6 @@ function composeReceiptHtml(order, firstName) {
       </tr>`
   }).join('')
 
-  // Roman numeral for the Folio number (purely decorative)
   const folioNumber = String(order.items.length).padStart(2, '0')
 
   return `<!DOCTYPE html>
@@ -327,34 +345,76 @@ function composeReceiptHtml(order, firstName) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="dark">
-<meta name="supported-color-schemes" content="dark">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
 <title>Order confirmation · ${escHtml(order.number)}</title>
+<style type="text/css">
+  /*
+   * Adaptive theming for clients that honor prefers-color-scheme.
+   * Inline styles set the LIGHT default; these rules override in dark.
+   * Gmail Web ignores all of this — it sees only the light theme.
+   * Apple Mail, iOS Mail, modern Outlook honor it.
+   */
+  :root {
+    color-scheme: light dark;
+    supported-color-schemes: light dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body, .body-bg { background-color: #0A0A0A !important; }
+    .t-fg { color: #E8E2D5 !important; }
+    .t-dim { color: #A09A8A !important; }
+    .t-ox { color: #9C1B2A !important; }
+    .t-faint { color: #5C5648 !important; }
+    .row-rule { border-bottom-color: #2A2A2A !important; }
+    .row-rule-top { border-top-color: #2A2A2A !important; }
+    .rule-top { border-top-color: #2A2A2A !important; }
+    .rule-bottom { border-bottom-color: #2A2A2A !important; }
+    .thumb, .thumb-blank { background-color: #1C1C1C !important; border-color: #2A2A2A !important; }
+    .link { color: #E8E2D5 !important; }
+    .ref-mono { color: #E8E2D5 !important; }
+  }
+
+  /*
+   * Apple Mail 16+ supports light-dark(). Doesn't help most clients
+   * but gives Apple users a clean toggle without media-query weight.
+   */
+  @supports (color: light-dark(#fff, #000)) {
+    .ld-bg { background-color: light-dark(#F2EDE2, #0A0A0A); }
+    .ld-fg { color: light-dark(#161210, #E8E2D5); }
+    .ld-dim { color: light-dark(#6C645A, #A09A8A); }
+    .ld-ox { color: light-dark(#7A1220, #9C1B2A); }
+    .ld-rule { border-color: light-dark(#DDD3C0, #2A2A2A); }
+  }
+
+  /* Some clients (Outlook, mostly) reset link colors. Lock to our scheme. */
+  a { text-decoration: underline; }
+</style>
 <!--[if mso]>
 <style type="text/css">
   table, td { font-family: Georgia, serif !important; }
 </style>
 <![endif]-->
 </head>
-<body style="margin:0;padding:0;background:#0A0A0A;color:#E8E2D5;-webkit-font-smoothing:antialiased;">
+<body class="body-bg" style="margin:0;padding:0;background-color:#F2EDE2;-webkit-font-smoothing:antialiased;">
 
-<!-- Preheader (hidden, but shown in the inbox preview line) -->
+<!-- Preheader -->
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">
   Your order ${escHtml(order.number)} has been received by the apothecary.
 </div>
 
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#0A0A0A;">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" class="body-bg" style="background-color:#F2EDE2;">
   <tr>
     <td align="center" style="padding:48px 24px;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:580px;">
 
         <!-- Wordmark + folio line -->
         <tr>
-          <td align="center" style="padding-bottom:36px;border-bottom:1px solid #2A2A2A;">
-            <div style="font-family:Georgia,'Times New Roman',serif;font-size:24px;letter-spacing:0.16em;color:#E8E2D5;margin-bottom:8px;">
+          <td align="center" class="rule-bottom" style="padding-bottom:36px;border-bottom:1px solid #DDD3C0;">
+            <div class="t-fg" style="font-family:Georgia,'Times New Roman',serif;font-size:24px;letter-spacing:0.16em;color:#161210;margin-bottom:8px;">
               MAISON·NOIR
             </div>
-            <div style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#A09A8A;">
+            <div class="t-dim mono" style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#6C645A;">
               Apothecary · MMXXVI
             </div>
           </td>
@@ -363,10 +423,10 @@ function composeReceiptHtml(order, firstName) {
         <!-- Greeting -->
         <tr>
           <td style="padding:48px 0 12px 0;">
-            <div style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#9C1B2A;margin-bottom:24px;">
+            <div class="t-ox mono" style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#7A1220;margin-bottom:24px;">
               — Order received · Folio · ${folioNumber}
             </div>
-            <div style="font-family:Georgia,'Times New Roman',serif;font-size:36px;line-height:1.1;color:#E8E2D5;letter-spacing:-0.02em;">
+            <div class="t-fg" style="font-family:Georgia,'Times New Roman',serif;font-size:36px;line-height:1.1;color:#161210;letter-spacing:-0.02em;">
               ${greeting}
             </div>
           </td>
@@ -374,7 +434,7 @@ function composeReceiptHtml(order, firstName) {
 
         <tr>
           <td style="padding:24px 0 36px 0;">
-            <p style="font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.6;color:#A09A8A;margin:0;">
+            <p class="t-dim" style="font-family:Georgia,'Times New Roman',serif;font-size:16px;line-height:1.6;color:#6C645A;margin:0;">
               Thank you. Your order has been received by the apothecary
               and will be prepared with care. A copy of this confirmation
               has been kept for your records.
@@ -384,22 +444,22 @@ function composeReceiptHtml(order, firstName) {
 
         <!-- Order metadata band -->
         <tr>
-          <td style="padding:24px 0;border-top:1px solid #2A2A2A;border-bottom:1px solid #2A2A2A;">
+          <td class="rule-top rule-bottom" style="padding:24px 0;border-top:1px solid #DDD3C0;border-bottom:1px solid #DDD3C0;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
               <tr>
                 <td valign="top" style="padding-right:16px;">
-                  <div style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#A09A8A;margin-bottom:8px;">
+                  <div class="t-dim mono" style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#6C645A;margin-bottom:8px;">
                     Order
                   </div>
-                  <div style="font-family:Consolas,Menlo,monospace;font-size:14px;color:#E8E2D5;letter-spacing:0.04em;">
+                  <div class="t-fg mono" style="font-family:Consolas,Menlo,monospace;font-size:14px;color:#161210;letter-spacing:0.04em;">
                     ${escHtml(order.number)}
                   </div>
                 </td>
                 <td valign="top" align="right">
-                  <div style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#A09A8A;margin-bottom:8px;">
+                  <div class="t-dim mono" style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#6C645A;margin-bottom:8px;">
                     Placed
                   </div>
-                  <div style="font-family:Consolas,Menlo,monospace;font-size:13px;color:#E8E2D5;letter-spacing:0.02em;">
+                  <div class="t-fg mono" style="font-family:Consolas,Menlo,monospace;font-size:13px;color:#161210;letter-spacing:0.02em;">
                     ${escHtml(placed)}
                   </div>
                 </td>
@@ -411,7 +471,7 @@ function composeReceiptHtml(order, firstName) {
         <!-- Items -->
         <tr>
           <td style="padding:36px 0 0 0;">
-            <div style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#9C1B2A;margin-bottom:8px;">
+            <div class="t-ox mono" style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#7A1220;margin-bottom:8px;">
               — Preparations
             </div>
           </td>
@@ -426,26 +486,26 @@ function composeReceiptHtml(order, firstName) {
 
         <!-- Totals -->
         <tr>
-          <td style="padding:24px 0;border-top:1px solid #2A2A2A;">
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="font-family:Consolas,Menlo,monospace;font-size:13px;color:#E8E2D5;">
+          <td class="rule-top" style="padding:24px 0;border-top:1px solid #DDD3C0;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="font-family:Consolas,Menlo,monospace;font-size:13px;">
               <tr>
-                <td style="padding:4px 0;color:#A09A8A;">Subtotal</td>
-                <td align="right" style="padding:4px 0;">${escHtml(fmtEur(order.totals?.subtotal))}</td>
+                <td class="t-dim" style="padding:4px 0;color:#6C645A;">Subtotal</td>
+                <td align="right" class="t-fg" style="padding:4px 0;color:#161210;">${escHtml(fmtEur(order.totals?.subtotal))}</td>
               </tr>
               <tr>
-                <td style="padding:4px 0;color:#A09A8A;">Shipping</td>
-                <td align="right" style="padding:4px 0;">${escHtml(fmtEur(order.totals?.shipping))}</td>
+                <td class="t-dim" style="padding:4px 0;color:#6C645A;">Shipping</td>
+                <td align="right" class="t-fg" style="padding:4px 0;color:#161210;">${escHtml(fmtEur(order.totals?.shipping))}</td>
               </tr>
               <tr>
-                <td style="padding:4px 0;color:#A09A8A;">VAT (included)</td>
-                <td align="right" style="padding:4px 0;">${escHtml(fmtEur(order.totals?.vat))}</td>
+                <td class="t-dim" style="padding:4px 0;color:#6C645A;">VAT (included)</td>
+                <td align="right" class="t-fg" style="padding:4px 0;color:#161210;">${escHtml(fmtEur(order.totals?.vat))}</td>
               </tr>
               <tr>
-                <td colspan="2" style="padding-top:12px;border-top:1px solid #2A2A2A;"></td>
+                <td colspan="2" class="rule-top" style="padding-top:12px;border-top:1px solid #DDD3C0;"></td>
               </tr>
               <tr>
-                <td style="padding:8px 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#E8E2D5;">Total</td>
-                <td align="right" style="padding:8px 0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#E8E2D5;">${escHtml(fmtEur(order.totals?.total))}</td>
+                <td class="t-fg" style="padding:8px 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#161210;">Total</td>
+                <td align="right" class="t-fg" style="padding:8px 0;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#161210;">${escHtml(fmtEur(order.totals?.total))}</td>
               </tr>
             </table>
           </td>
@@ -453,25 +513,25 @@ function composeReceiptHtml(order, firstName) {
 
         <!-- Delivery + shipping -->
         <tr>
-          <td style="padding:36px 0 0 0;border-top:1px solid #2A2A2A;">
+          <td class="rule-top" style="padding:36px 0 0 0;border-top:1px solid #DDD3C0;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
               <tr>
                 <td valign="top" width="50%" style="padding-right:16px;">
-                  <div style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#9C1B2A;margin-bottom:12px;">
+                  <div class="t-ox mono" style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#7A1220;margin-bottom:12px;">
                     — Estimated delivery
                   </div>
-                  <div style="font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#E8E2D5;margin-bottom:6px;">
+                  <div class="t-fg" style="font-family:Georgia,'Times New Roman',serif;font-size:18px;color:#161210;margin-bottom:6px;">
                     ${escHtml(order.estimatedDelivery?.start || '—')} – ${escHtml(order.estimatedDelivery?.end || '—')}
                   </div>
-                  <p style="font-family:Georgia,'Times New Roman',serif;font-size:13px;line-height:1.5;color:#A09A8A;margin:0;">
+                  <p class="t-dim" style="font-family:Georgia,'Times New Roman',serif;font-size:13px;line-height:1.5;color:#6C645A;margin:0;">
                     Tracking details will be sent when your folio is dispatched.
                   </p>
                 </td>
                 <td valign="top" width="50%" style="padding-left:16px;">
-                  <div style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#9C1B2A;margin-bottom:12px;">
+                  <div class="t-ox mono" style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#7A1220;margin-bottom:12px;">
                     — Shipping to
                   </div>
-                  <div style="font-family:Georgia,'Times New Roman',serif;font-size:14px;line-height:1.5;color:#E8E2D5;">
+                  <div class="t-fg" style="font-family:Georgia,'Times New Roman',serif;font-size:14px;line-height:1.5;color:#161210;">
                     ${escHtml(`${order.shipping?.firstName || ''} ${order.shipping?.lastName || ''}`.trim())}<br>
                     ${escHtml(order.shipping?.address1 || '')}<br>
                     ${order.shipping?.address2 ? escHtml(order.shipping.address2) + '<br>' : ''}
@@ -486,11 +546,11 @@ function composeReceiptHtml(order, firstName) {
 
         <!-- Payment -->
         <tr>
-          <td style="padding:36px 0;border-top:1px solid #2A2A2A;">
-            <div style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#9C1B2A;margin-bottom:8px;">
+          <td class="rule-top" style="padding:36px 0;border-top:1px solid #DDD3C0;">
+            <div class="t-ox mono" style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#7A1220;margin-bottom:8px;">
               — Paid
             </div>
-            <div style="font-family:Consolas,Menlo,monospace;font-size:13px;color:#E8E2D5;">
+            <div class="t-fg mono" style="font-family:Consolas,Menlo,monospace;font-size:13px;color:#161210;">
               Card ending ${escHtml(order.payment?.last4 || '••••')}
             </div>
           </td>
@@ -498,15 +558,15 @@ function composeReceiptHtml(order, firstName) {
 
         <!-- Closing -->
         <tr>
-          <td align="center" style="padding:48px 0;border-top:1px solid #2A2A2A;">
-            <p style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:18px;line-height:1.5;color:#A09A8A;margin:0 0 24px 0;max-width:420px;">
+          <td align="center" class="rule-top" style="padding:48px 0;border-top:1px solid #DDD3C0;">
+            <p class="t-dim" style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:18px;line-height:1.5;color:#6C645A;margin:0 0 24px 0;max-width:420px;">
               "The smallest correspondence is held to the same standard
               as a thousand-bottle order."
             </p>
-            <p style="font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#A09A8A;margin:0;">
+            <p class="t-dim" style="font-family:Georgia,'Times New Roman',serif;font-size:14px;color:#6C645A;margin:0;">
               Should anything require attention, write to
-              <a href="mailto:concierge@maisonnoir.apothecary" style="color:#E8E2D5;text-decoration:underline;">concierge@maisonnoir.apothecary</a>,
-              quoting <span style="font-family:Consolas,Menlo,monospace;color:#E8E2D5;">${escHtml(order.number)}</span>.
+              <a href="mailto:concierge@maisonnoir.apothecary" class="link" style="color:#161210;text-decoration:underline;">concierge@maisonnoir.apothecary</a>,
+              quoting <span class="ref-mono mono" style="font-family:Consolas,Menlo,monospace;color:#161210;">${escHtml(order.number)}</span>.
             </p>
           </td>
         </tr>
@@ -514,13 +574,13 @@ function composeReceiptHtml(order, firstName) {
         <!-- Footer -->
         <tr>
           <td align="center" style="padding:24px 0 0 0;">
-            <div style="font-family:Georgia,'Times New Roman',serif;font-size:18px;letter-spacing:0.12em;color:#E8E2D5;margin-bottom:8px;">
+            <div class="t-fg" style="font-family:Georgia,'Times New Roman',serif;font-size:18px;letter-spacing:0.12em;color:#161210;margin-bottom:8px;">
               MAISON·NOIR
             </div>
-            <div style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#A09A8A;margin-bottom:24px;">
+            <div class="t-dim mono" style="font-family:Consolas,Menlo,monospace;font-size:10px;letter-spacing:0.32em;text-transform:uppercase;color:#6C645A;margin-bottom:24px;">
               12 Rue de l'Université · 75007 Paris
             </div>
-            <div style="font-family:Consolas,Menlo,monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:#5C5648;">
+            <div class="t-faint mono" style="font-family:Consolas,Menlo,monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:#A09A8A;">
               © MMXXVI · All Rites Reserved
             </div>
           </td>
@@ -533,6 +593,7 @@ function composeReceiptHtml(order, firstName) {
 </body>
 </html>`
 }
+
 
 // ---------------------------------------------------------------
 // Handler
