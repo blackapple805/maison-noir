@@ -35,6 +35,7 @@ This is a frontend-only project. All products, transactions, and orders are mock
 - **Editorial details** — grain overlays, hairline borders, rotated vertical text, marquee tickers, Roman numerals, "N°" and "Folio" notation throughout
 - **Ambient amorphous accents** — animated soft blobs that drift behind hero and feature sections
 - **Ambient field** — global subtle texture layer for atmospheric depth
+- **Theme-aware Lookbook overlays** — spread veils flip between a near-black wash (dark) and a warm bone wash (light) so editorial spreads read cleanly in either mode
 
 ### Brand Identity
 - **Custom SVG sigil** — drawn from scratch as a React component, scales infinitely, inherits theme color
@@ -48,6 +49,7 @@ This is a frontend-only project. All products, transactions, and orders are mock
 - **Full-screen search** — `Cmd/Ctrl + K` shortcut, live filtering across name, category, colorway, and materials
 - **Wishlist** — heart icon on every card, persists across sessions via `localStorage`
 - **Editorial lookbook** — parallax full-bleed spreads with scroll-triggered storytelling, per-spread overlay tuning to keep type legible against varying photography
+- **Optional hover-video on product cards** — when a product defines a `video` field, the still cross-fades to a muted looping clip on hover. Lazy-mounted (no bandwidth cost until hover), automatically suppressed on touch devices and for users with `prefers-reduced-motion`. Falls back gracefully on missing video files
 
 ### House & Services Pages
 The footer connects to a full set of editorial pages:
@@ -76,15 +78,46 @@ The footer connects to a full set of editorial pages:
 - **Real PDF invoice** generated client-side with jsPDF (lazy-loaded — only downloads when the user clicks the button)
 - **Order persistence** — confirmation page works after refresh, history saved to `localStorage`
 
+### Legal & Compliance
+- **Four editorial-styled policy pages** with a shared layout component: Terms, Privacy, Cookies, Modern Slavery Statement
+- **Draft-notice banner** at the top of each policy page making clear the text is for portfolio presentation and requires legal review before commercial use
+- **Consent architecture** (see below) — `/cookies` includes a live preferences panel with toggles, a real-time storage inspector, and a "Clear all my data" action
+
+### Privacy & Consent System
+A first-class, deliberately understated approach to privacy — no banner, no first-visit interruption, but real infrastructure beneath:
+
+- **`ConsentContext`** — central record of user consent by category (`essential`, `analytics`, `marketing`). Use `hasConsent('analytics')` to gate any future analytics or marketing scripts; today only `essential` is active
+- **Versioned consent storage** — the stored shape carries a schema version so future migrations are safe
+- **Owned-keys allowlist** — the "Clear all my data" button only ever removes keys this site has written, never touches foreign storage
+- **Live storage inspector** on `/cookies` — shows the user the exact keys, scopes, and values stored on their device right now
+- **Locked-on visual state** for the Essential toggle — visually communicates "on and required" rather than "off"
+
+### Security & Defensive Coding
+- **Strict Content Security Policy** — defined in both `public/_headers` (server) and `index.html` (meta) for defense in depth. Blocks framing (`frame-ancestors 'none'`), object embeds, mixed content
+- **Security headers** — HSTS preload, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy` (camera/mic/geo/FLoC disabled), Cross-Origin opener/resource policies
+- **ErrorBoundary** wrapping the entire app — render-time crashes show an editorial-styled fallback with reload action rather than blanking the screen
+- **Hardened storage access** — every `localStorage` / `sessionStorage` call is wrapped in `try/catch`. Safari Private Browsing, embedded iframes, and storage quota errors no longer crash the app
+- **Graceful image fallbacks** — broken Unsplash URLs hide silently rather than collapsing layouts with alt text in empty boxes
+- **Dependency hygiene** — `jspdf` pinned to a current major to patch the legacy `dompurify` XSS chain; remaining `npm audit` warnings are documented as development-only (Vite dev server)
+
 ### Performance & Accessibility
 - Lazy-loaded heavy dependencies (jsPDF)
 - All images use native `loading="lazy"`
+- Hover videos are lazy-mounted (zero network cost until hover)
 - Theme applied before first paint (no flash of wrong theme)
 - Keyboard navigation (`Cmd/Ctrl + K` for search, `Esc` closes modals)
-- ARIA labels on icon-only buttons
+- ARIA labels on icon-only buttons; `role="switch"` and `aria-checked` on toggle controls
 - Decorative duplicate content marked `aria-hidden`
+- `prefers-reduced-motion` respected by hover-video logic
+- `(hover: none)` media query suppresses hover-only effects on touch devices
 - 404 page for unknown routes
-- Graceful image fallbacks (broken sources hide silently rather than collapsing layouts)
+
+### SEO
+- **Sitemap** (`public/sitemap.xml`) listing all public routes with appropriate priorities and change frequencies
+- **robots.txt** disallowing `/checkout` and `/confirmation/` (transient, order-specific pages)
+- **Open Graph** and **Twitter Card** meta tags for clean link previews on iMessage, Slack, Twitter, LinkedIn
+- **Canonical URL** declared in `<head>`
+- Page-specific titles and descriptions
 
 ---
 
@@ -97,10 +130,10 @@ The footer connects to a full set of editorial pages:
 | **Styling** | Tailwind CSS 3 (with CSS variable theming) |
 | **Motion** | Framer Motion 11 |
 | **Routing** | React Router 6 |
-| **PDF Generation** | jsPDF (lazy-loaded) |
-| **Icons** | Lucide React |
+| **PDF Generation** | jsPDF 4 (lazy-loaded) |
+| **Icons** | Lucide React + custom SVG |
 | **State** | React Context + `useReducer` |
-| **Persistence** | `localStorage` (wishlist, theme, orders) + `sessionStorage` (loading screen) |
+| **Persistence** | `localStorage` (theme, wishlist, orders, consent) + `sessionStorage` (loading screen) |
 | **Type Safety** | Plain JS (kept simple for portfolio readability) |
 
 ---
@@ -141,13 +174,18 @@ The production build outputs to `/dist`.
 ## Project Structure
 
 ```
+public/
+├── _headers                       # Production security headers (Netlify / Cloudflare)
+├── robots.txt
+└── sitemap.xml
+
 src/
 ├── components/
 │   ├── Nav.jsx                    # Top navigation with theme toggle
 │   ├── Hero.jsx                   # Cinematic landing hero
 │   ├── Logo.jsx                   # SVG sigil + wordmark
 │   ├── Marquee.jsx                # Scrolling editorial ticker
-│   ├── ProductCard.jsx            # Grid card with quick-view + wishlist
+│   ├── ProductCard.jsx            # Grid card with quick-view, wishlist, hover-video
 │   ├── CartDrawer.jsx             # Sliding bag panel
 │   ├── QuickView.jsx              # Product preview modal
 │   ├── SearchOverlay.jsx          # Cmd+K full-screen search
@@ -155,20 +193,22 @@ src/
 │   ├── LoadingScreen.jsx          # First-visit brand intro
 │   ├── AmbientField.jsx           # Global atmospheric texture
 │   ├── AmorphousBlob.jsx          # Animated soft accent shape
+│   ├── ErrorBoundary.jsx          # Editorial fallback for render-time crashes
 │   ├── Footer.jsx                 # Site footer with newsletter + links
 │   └── Field.jsx                  # Reusable form input
 │
 ├── context/
-│   ├── ThemeContext.jsx           # Dark/light theme, system preference
+│   ├── ThemeContext.jsx           # Dark/light theme, system preference, hardened storage
 │   ├── CartContext.jsx            # Cart state + reducer
 │   ├── WishlistContext.jsx        # Saved pieces persistence
-│   └── OrderContext.jsx           # Order placement and history
+│   ├── OrderContext.jsx           # Order placement and history
+│   └── ConsentContext.jsx         # Consent state + owned-keys allowlist
 │
 ├── pages/
 │   ├── Home.jsx                   # Landing
 │   ├── Collection.jsx             # Filterable product grid
 │   ├── Product.jsx                # Product detail
-│   ├── Lookbook.jsx               # Editorial scroll spreads
+│   ├── Lookbook.jsx               # Editorial scroll spreads (theme-aware overlays)
 │   ├── Atelier.jsx                # The practice
 │   ├── Heritage.jsx               # Chronology of the house
 │   ├── Boutiques.jsx              # Physical locations
@@ -179,6 +219,11 @@ src/
 │   ├── Wishlist.jsx               # Saved pieces
 │   ├── Checkout.jsx               # Two-column form flow
 │   ├── Confirmation.jsx           # Order confirmation + PDF
+│   ├── LegalPage.jsx              # Shared layout for the four policy pages
+│   ├── Terms.jsx                  # Terms of Service (draft)
+│   ├── Privacy.jsx                # Privacy Policy (draft, GDPR-structured)
+│   ├── Cookies.jsx                # Cookies Policy + live preferences panel
+│   ├── ModernSlavery.jsx          # Modern Slavery Statement (draft)
 │   └── NotFound.jsx               # 404
 │
 ├── data/
@@ -189,7 +234,7 @@ src/
 │   └── invoice.js                 # jsPDF invoice generator
 │
 ├── App.jsx                        # Routes + providers
-├── main.jsx                       # Entry point
+├── main.jsx                       # Entry point + provider tree + ErrorBoundary
 └── index.css                      # Tailwind + CSS variable tokens
 ```
 
@@ -215,6 +260,10 @@ src/
 | `/wishlist` | Saved pieces |
 | `/checkout` | Checkout flow |
 | `/confirmation/:number` | Order confirmation |
+| `/terms` | Terms of Service |
+| `/privacy` | Privacy Policy |
+| `/cookies` | Cookies Policy + preferences panel |
+| `/modern-slavery` | Modern Slavery Statement |
 | `*` | 404 |
 
 ---
@@ -225,6 +274,7 @@ src/
 |-----|--------|
 | `Cmd/Ctrl + K` | Open search |
 | `Esc` | Close any modal or overlay |
+| `Space` / `Enter` | Toggle a focused consent switch |
 
 ---
 
@@ -266,21 +316,53 @@ Replace mock data in `src/data/products.js`. Each product needs:
   origin: 'Formulated in Lyon',
   description: 'Long-form editorial description.',
   image: 'https://path-to-image.jpg',
+  // Optional — adds a hover-video swap on this card.
+  // Drop the file in public/videos/ and reference it as /videos/name.mp4
+  video: '/videos/serum-lumiere.mp4',
   sizes: ['30ml', '50ml'],
 }
+```
+
+### Hover-video filming notes
+- 3–5 seconds long, no audio, loops cleanly
+- 3:4 aspect (720×960 or 1080×1440) to match the card
+- Under 1.5 MB per clip — H.264 mp4, CRF 26
+- Match the still's lighting and mood; the video is a continuation, not a different shot
+
+Recommended ffmpeg command:
+
+```bash
+ffmpeg -i source.mov -t 4 -vf "scale=720:960,setsar=1" -c:v libx264 -crf 26 -preset slow -pix_fmt yuv420p -an -movflags +faststart output.mp4
 ```
 
 ### Hero image
 Edit `src/components/Hero.jsx` and replace the Unsplash URL.
 
 ### Lookbook spreads
-Edit the `spreads` array in `src/pages/Lookbook.jsx`.
+Edit the `spreads` array in `src/pages/Lookbook.jsx`. Each spread can set its own `overlay` strength (0–1) and `side` (`'left'` / `'right'`) for the theme-aware veil system.
 
 ### Boutique locations
 Edit the `boutiques` array in `src/pages/Boutiques.jsx`.
 
 ### Concierge form endpoint
 The form in `src/pages/Concierge.jsx` currently captures messages client-side only. To wire it to a real backend, replace the body of `handleSubmit` with a `fetch()` call to your provider of choice (Formspree, Resend, EmailJS, or a custom endpoint).
+
+### Adding a new consent category
+1. Add the key to `DEFAULT_STATE` in `src/context/ConsentContext.jsx`
+2. Add a row in the toggles UI on `src/pages/Cookies.jsx`
+3. Guard the relevant initialization with `hasConsent('newKey')`
+
+### Adding analytics later (example)
+```jsx
+import { useConsent } from './context/ConsentContext'
+
+const { hasConsent } = useConsent()
+useEffect(() => {
+  if (hasConsent('analytics')) {
+    // initialize Plausible / GA / etc. here
+  }
+}, [hasConsent])
+```
 
 ---
 
@@ -314,7 +396,12 @@ Or connect the GitHub repo at [vercel.com/new](https://vercel.com/new) for autom
 Build command: `npm run build`
 Publish directory: `dist`
 
-A `public/_headers` file is included for Netlify and Cloudflare Pages.
+The included `public/_headers` file applies the production security headers automatically on Netlify and Cloudflare Pages.
+
+### Before going live
+- Replace `https://maison-noir.vercel.app` in `public/sitemap.xml`, `public/robots.txt`, and the meta tags in `index.html` with your real production URL
+- Drop a 1200×630 share image at `public/og-image.png` (referenced by the OG / Twitter meta tags)
+- Have a qualified lawyer review the four legal pages before relying on them commercially — the on-page draft notice should be removed once the text is finalised
 
 ### Other hosts
 Any static host works. Build with `npm run build` and serve the `/dist` folder.
@@ -327,6 +414,7 @@ Potential next steps if extending into a real project:
 
 - [ ] Wire the Concierge form to a real email service (Resend / Formspree)
 - [ ] Wire the newsletter subscription form to an audience provider
+- [ ] Wire real analytics (Plausible / PostHog) behind the existing consent gate
 - [ ] Real backend (Supabase / Firebase) for products and orders
 - [ ] Real payment (Stripe Checkout or Elements)
 - [ ] Customer accounts with order history
@@ -335,8 +423,8 @@ Potential next steps if extending into a real project:
 - [ ] Product image galleries with zoom
 - [ ] Real shipping rate API (EasyPost, ShipStation)
 - [ ] Inventory management
-- [ ] Analytics (Plausible, PostHog)
 - [ ] Real refill return label generation
+- [ ] Replace placeholder hover-video clips with bespoke product footage
 
 ---
 
