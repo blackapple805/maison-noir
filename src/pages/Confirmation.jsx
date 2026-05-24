@@ -143,7 +143,7 @@ export default function Confirmation() {
               className="flex gap-6 pb-8 border-b hairline last:border-0"
             >
               <div className="w-24 md:w-32 aspect-[3/4] bg-bg-elev overflow-hidden shrink-0">
-                <img src={item.image} alt="" className="w-full h-full object-cover" />
+                <OrderItemImage src={item.image} alt={item.name} />
               </div>
               <div className="flex-1 flex flex-col md:flex-row md:items-center gap-4">
                 <div className="flex-1">
@@ -231,5 +231,50 @@ function Row({ label, value, muted }) {
       <span className={muted ? 'text-fg-dim' : ''}>{label}</span>
       <span className={muted ? 'text-fg-muted' : 'text-fg font-mono'}>{value}</span>
     </div>
+  )
+}
+
+/**
+ * OrderItemImage
+ * --------------
+ * Thumbnail for items on the order confirmation. Handles two failure
+ * cases gracefully:
+ *   1. `src` missing entirely (older orders placed before the image
+ *      field was stored on order objects in localStorage).
+ *   2. `src` present but the URL 404s (CDN expired, blocked, etc.).
+ *
+ * In either case, we show a typographic placeholder so the layout never
+ * collapses or shows a broken-image glyph.
+ */
+function OrderItemImage({ src, alt }) {
+  const [failed, setFailed] = useState(false)
+  const showFallback = !src || failed
+
+  if (showFallback) {
+    return (
+      <div
+        className="w-full h-full flex items-center justify-center px-3 text-center"
+        style={{ backgroundColor: 'var(--bg-elev-2)' }}
+        aria-hidden="true"
+      >
+        <span
+          className="font-display italic text-sm leading-tight"
+          style={{ color: 'var(--fg-faint)' }}
+        >
+          {alt}
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      loading="lazy"
+      onError={() => setFailed(true)}
+      style={{ filter: 'grayscale(var(--image-grayscale))' }}
+      className="w-full h-full object-cover"
+    />
   )
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import AmorphousBlob from '../components/AmorphousBlob'
@@ -19,17 +19,82 @@ export default function Concierge() {
     subject: subjects[0],
     message: '',
   })
-  const [submitted, setSubmitted] = useState(false)
+  // 'idle' | 'sending' | 'sent' | 'error'
+  const [status, setStatus] = useState('idle')
+  const [reference, setReference] = useState(null)
+  const [errorMessage, setErrorMessage] = useState('')
+
+  // Mounted-at timestamp — sent with the submission. The backend rejects
+  // any form posted under 1.5 seconds after load (bots fill instantly).
+  const mountedAt = useRef(Date.now())
+
+  // Honeypot — a hidden field that real users never see. The backend
+  // treats any submission with this filled as a bot and silently 200s.
+  const [honeypot, setHoneypot] = useState('')
+
+  // Reset the mounted-at clock whenever the user returns to the form
+  // after a successful submission, so they're not flagged for "too fast".
+  useEffect(() => {
+    if (status === 'idle') mountedAt.current = Date.now()
+  }, [status])
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    // No backend wired — message is captured locally and the UI confirms.
-    // Replace with an API call when the dispatch endpoint is ready.
-    setSubmitted(true)
+    if (status === 'sending') return     // prevent double-submit
+    setStatus('sending')
+    setErrorMessage('')
+
+    try {
+      const response = await fetch('/api/concierge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          _gotcha: honeypot,             // honeypot
+          _ts: mountedAt.current,        // page-mount timestamp
+        }),
+      })
+
+      // Try to parse JSON regardless of status — the API returns JSON
+      // on both success and failure. If parsing fails, treat as error.
+      let data = null
+      try {
+        data = await response.json()
+      } catch {
+        // ignore — handled below
+      }
+
+      if (response.ok && data?.ok) {
+        setReference(data.ref || null)
+        setStatus('sent')
+        return
+      }
+
+      // Show the server's error message if one came back, else a generic
+      // one. Never reveal validation details — the server already vague-d
+      // them. Rate-limit (429) gets a distinct line.
+      if (response.status === 429) {
+        setErrorMessage('Too many submissions from this address. Please wait an hour and try again.')
+      } else {
+        setErrorMessage(data?.error || 'Could not send your message. Please try again.')
+      }
+      setStatus('error')
+    } catch (networkErr) {
+      // Truly offline / DNS failure / fetch threw. Distinct UI from server errors.
+      setErrorMessage('Network unavailable. Please check your connection and try again.')
+      setStatus('error')
+    }
+  }
+
+  function startOver() {
+    setForm({ name: '', email: '', subject: subjects[0], message: '' })
+    setReference(null)
+    setErrorMessage('')
+    setStatus('idle')
   }
 
   return (
@@ -64,7 +129,7 @@ export default function Concierge() {
         <div className="grid md:grid-cols-12 gap-12 md:gap-20">
           {/* Form */}
           <div className="md:col-span-7">
-            {submitted ? (
+            {status === 'sent' ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -80,22 +145,47 @@ export default function Concierge() {
                   reply to <span className="text-bone/90">{form.email}</span> within
                   one working day, often sooner.
                 </p>
-                <p className="editorial-label text-bone/40 mb-8">
-                  Reference · {Math.random().toString(36).slice(2, 8).toUpperCase()}
-                </p>
+                {reference && (
+                  <p className="editorial-label text-bone/40 mb-8">
+                    Reference · {reference}
+                  </p>
+                )}
                 <button
-                  onClick={() => {
-                    setSubmitted(false)
-                    setForm({ name: '', email: '', subject: subjects[0], message: '' })
-                  }}
+                  onClick={startOver}
                   className="editorial-label link-line text-bone hover:text-ox"
                 >
                   Send another →
                 </button>
               </motion.div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-10">
+              <form onSubmit={handleSubmit} className="space-y-10" noValidate>
                 <p className="editorial-label text-ox">— Address the house</p>
+
+                {/* Honeypot — hidden from real users, irresistible to bots.
+                    Wrapped in a div that's invisible to humans (offscreen,
+                    no tab stop, no announce) but a normal input to scrapers. */}
+                <div
+                  aria-hidden="true"
+                  style={{
+                    position: 'absolute',
+                    left: '-9999px',
+                    width: '1px',
+                    height: '1px',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <label>
+                    Leave this field empty
+                    <input
+                      type="text"
+                      name="_gotcha"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypot}
+                      onChange={(e) => setHoneypot(e.target.value)}
+                    />
+                  </label>
+                </div>
 
                 <Field label="Your name">
                   <input
@@ -104,6 +194,8 @@ export default function Concierge() {
                     value={form.name}
                     onChange={handleChange}
                     required
+                    maxLength={120}
+                    autoComplete="name"
                     className="w-full bg-transparent border-b hairline outline-none py-3 text-bone placeholder:text-bone/30 focus:border-bone/60 transition-colors"
                     placeholder="Élise Marchand"
                   />
@@ -116,6 +208,8 @@ export default function Concierge() {
                     value={form.email}
                     onChange={handleChange}
                     required
+                    maxLength={254}
+                    autoComplete="email"
                     className="w-full bg-transparent border-b hairline outline-none py-3 text-bone placeholder:text-bone/30 focus:border-bone/60 transition-colors"
                     placeholder="your.address@elsewhere.com"
                   />
@@ -148,20 +242,41 @@ export default function Concierge() {
                     value={form.message}
                     onChange={handleChange}
                     required
+                    minLength={10}
+                    maxLength={4000}
                     rows={6}
                     className="w-full bg-transparent border-b hairline outline-none py-3 text-bone placeholder:text-bone/30 focus:border-bone/60 transition-colors resize-none"
                     placeholder="A few sentences. We read every line."
                   />
                 </Field>
 
+                {status === 'error' && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    role="alert"
+                    className="border-l-2 pl-4 py-1"
+                    style={{ borderColor: 'var(--accent)' }}
+                  >
+                    <p className="editorial-label text-ox mb-1">— Something went amiss</p>
+                    <p className="text-bone/70 text-sm leading-relaxed">{errorMessage}</p>
+                  </motion.div>
+                )}
+
                 <button
                   type="submit"
-                  className="editorial-label text-bone hover:text-ox transition-colors group inline-flex items-center gap-3"
+                  disabled={status === 'sending'}
+                  aria-busy={status === 'sending'}
+                  className="editorial-label text-bone hover:text-ox transition-colors group inline-flex items-center gap-3 disabled:opacity-50 disabled:cursor-wait"
                 >
-                  <span className="link-line">Dispatch the message</span>
-                  <span className="text-lg leading-none transform group-hover:translate-x-1 transition-transform">
-                    →
+                  <span className="link-line">
+                    {status === 'sending' ? 'Dispatching…' : 'Dispatch the message'}
                   </span>
+                  {status !== 'sending' && (
+                    <span className="text-lg leading-none transform group-hover:translate-x-1 transition-transform">
+                      →
+                    </span>
+                  )}
                 </button>
               </form>
             )}
