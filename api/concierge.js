@@ -279,21 +279,46 @@ export default async function handler(req, res) {
 
     const ref = generateReference()
 
-    // Compose the email. Plain text only — no HTML body, so any
-    // residual injection is harmless in the mail client.
+    // Compose the email. Plain text only — no HTML body, so any residual
+    // injection is harmless in the mail client.
+    //
+    // Layout philosophy: this is an admin notification, not a customer-
+    // facing piece. Optimised for glanceable triage from a phone lock
+    // screen. Three blocks separated by rules:
+    //
+    //   1. METADATA — who, when, what about, in one tight stanza
+    //   2. THE MESSAGE — verbatim, padded with whitespace
+    //   3. TRACE — reference + ip hash for audit lookup
+    //
+    // Each section header is kerned-out in caps so it survives clients
+    // that mangle whitespace. Em-dashes flank section names so the eye
+    // catches them on a fast scroll.
+    const rule = '──────────────────────────────────────────'
     const emailBody = [
-      `Concierge submission — ${ref}`,
-      `Received: ${new Date().toUTCString()}`,
+      `MAISON·NOIR  ·  CONCIERGE`,
       ``,
-      `From:    ${name} <${email}>`,
-      `Subject: ${subject}`,
+      rule,
       ``,
-      `─────────`,
-      message,
-      `─────────`,
+      `   FROM       ${name}`,
+      `              <${email}>`,
       ``,
-      `Reference:  ${ref}`,
-      `IP hash:    ${ipHash}`,
+      `   IN RE      ${subject}`,
+      `   RECEIVED   ${new Date().toUTCString()}`,
+      `   REFERENCE  ${ref}`,
+      ``,
+      rule,
+      ``,
+      `   — MESSAGE`,
+      ``,
+      ...message.split('\n').map((line) => `   ${line}`),
+      ``,
+      rule,
+      ``,
+      `   Reply directly to this email — it will reach`,
+      `   ${name} at ${email}.`,
+      ``,
+      `   Audit hash · ${ipHash}`,
+      ``,
     ].join('\n')
 
     // Send.
