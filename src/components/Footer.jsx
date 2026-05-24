@@ -1,22 +1,67 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 export default function Footer() {
   const [email, setEmail] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  // 'idle' | 'sending' | 'sent' | 'error'
+  const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
 
-  function handleSubscribe(e) {
+  // Honeypot — hidden from real users, irresistible to bots.
+  const [honeypot, setHoneypot] = useState('')
+
+  // Page-mount timestamp — the backend rejects forms submitted under
+  // 1 second after mount (no real human types and submits that fast).
+  const mountedAt = useRef(Date.now())
+  useEffect(() => {
+    if (status === 'idle') mountedAt.current = Date.now()
+  }, [status])
+
+  async function handleSubscribe(e) {
     e.preventDefault()
+    if (status === 'sending') return
     setError('')
-    // Lightweight email validation — same pattern as Checkout.
+
+    // Client-side email shape check — cheap UX win, server validates again.
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setError('Enter a valid address.')
       return
     }
-    // No backend wired — capture locally and show confirmation. Swap
-    // for an audience API (Resend, Buttondown, Klaviyo, etc.) when ready.
-    setSubmitted(true)
+
+    setStatus('sending')
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          _gotcha: honeypot,
+          _ts: mountedAt.current,
+        }),
+      })
+
+      let data = null
+      try {
+        data = await response.json()
+      } catch {
+        // ignore
+      }
+
+      if (response.ok && data?.ok) {
+        setStatus('sent')
+        return
+      }
+
+      if (response.status === 429) {
+        setError('Too many attempts. Please try again later.')
+      } else {
+        setError(data?.error || 'Could not subscribe. Please try again.')
+      }
+      setStatus('error')
+    } catch {
+      setError('Network unavailable. Please try again.')
+      setStatus('error')
+    }
   }
 
   return (
@@ -32,7 +77,7 @@ export default function Footer() {
             and the occasional invitation. Unsubscribe with one breath.
           </p>
 
-          {submitted ? (
+          {status === 'sent' ? (
             <div className="max-w-md">
               <p className="editorial-label text-accent mb-3">— Received</p>
               <p className="font-display italic text-2xl leading-tight text-bone/90 mb-2">
@@ -49,32 +94,67 @@ export default function Footer() {
               className="flex items-center border-b hairline pb-2 max-w-md"
               noValidate
             >
+              {/* Honeypot — hidden from real users. Wrapped in a div that
+                  visually hides without using display:none (which some bots
+                  detect and skip). */}
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  left: '-9999px',
+                  width: '1px',
+                  height: '1px',
+                  overflow: 'hidden',
+                }}
+              >
+                <label>
+                  Leave this field empty
+                  <input
+                    type="text"
+                    name="_gotcha"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </label>
+              </div>
+
               <input
                 type="email"
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value)
-                  if (error) setError('')
+                  if (error) {
+                    setError('')
+                    setStatus('idle')
+                  }
                 }}
                 placeholder="your.address@elsewhere.com"
                 className="flex-1 bg-transparent outline-none text-bone placeholder:text-bone/30 text-sm"
                 aria-label="Email address"
                 aria-invalid={Boolean(error)}
                 aria-describedby={error ? 'newsletter-error' : undefined}
+                autoComplete="email"
+                maxLength={254}
                 required
+                disabled={status === 'sending'}
               />
               <button
                 type="submit"
-                className="editorial-label text-bone hover:text-ox transition-colors"
+                disabled={status === 'sending'}
+                aria-busy={status === 'sending'}
+                className="editorial-label text-bone hover:text-ox transition-colors disabled:opacity-50 disabled:cursor-wait"
               >
-                Subscribe →
+                {status === 'sending' ? 'Sending…' : 'Subscribe →'}
               </button>
             </form>
           )}
-          {error && !submitted && (
+          {error && status !== 'sent' && (
             <p
               id="newsletter-error"
               className="editorial-label text-accent mt-3 max-w-md normal-case tracking-normal"
+              role="alert"
             >
               {error}
             </p>
